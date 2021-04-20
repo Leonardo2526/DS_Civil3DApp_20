@@ -26,22 +26,80 @@ namespace StylesRenaming
     /// </summary>
     public partial class StartForm : Window
     {
-     
+        public static string OldNameStyle;
+        public static string NewNameStyle;
+
+        public static string TextToAdd;
+
+
 
         public StartForm()
         {
             InitializeComponent(); 
         }
       
-        private void Start_Click(object sender, RoutedEventArgs e)
+        private void OK_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            if (OldName.Text == "")
+            {
+                OldName.ToolTip = "Input text";
+            }
+            else if (NewName.Text == "")
+            {
+                NewName.ToolTip = "Input text";
+            }
+            else
+            {
+                this.Close();
 
-            Main main = new Main();
-            main.GetStyles();
+                OldNameStyle = OldName.Text;
+                NewNameStyle = NewName.Text;
+
+                Main main = new Main();
+                main.GetStyles();
+            }
+           
 
         }
 
+        private void OldName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void AddToBegining_Click(object sender, RoutedEventArgs e)
+        {
+            if (AddTxt.Text == "")
+            {
+                AddTxt.ToolTip = "Input text";
+            }
+            else
+            {
+                this.Close();
+
+                TextToAdd = AddTxt.Text;
+
+                Main main = new Main();
+                main.GetStyles();
+            }
+        }
+
+        private void AddToEnd_Click(object sender, RoutedEventArgs e)
+        {
+            if (AddTxt.Text == "")
+            {
+                AddTxt.ToolTip = "Input text";
+            }
+            else
+            {
+                this.Close();
+
+                TextToAdd = AddTxt.Text;
+
+                Main main = new Main();
+                main.GetStyles();
+            }
+        }
     }
 
 }

@@ -88,7 +88,7 @@ namespace StylesRenaming
         /// <param name="objectType"></param>
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
-        private void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
+        public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
         {
 
             object res = objectType.InvokeMember(pf.Name,
@@ -101,25 +101,19 @@ namespace StylesRenaming
             foreach (ObjectId sbid in scBase)
             {
                 StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
+                RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
 
-                if (stylebase.Name.Contains("ГЦМ_ДС_"))
-                {
-                    try
-                    {
-                        stylebase.Name = stylebase.Name.Replace("ГЦМ_ДС_", "ГЦМ_ГТ_");
-                        AddStyleToList(stylebase, pf, styleList);
-                        ListCollection(objectType, pf, myStylesRoot, styleList);
-                    }
+                //Check rename options
+                if (StartForm.OldNameStyle.Contains("*"))
+                    renameOption.RenameByTemplate();
+                else
+                    renameOption.RenameAccurate();
 
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
+              
             }
         }
 
-        void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
+        public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
         {
             // Add the style name and parameters to the list of all styles
             StyleInfo styleinfo = new StyleInfo();
@@ -177,7 +171,6 @@ namespace StylesRenaming
         }
 
     }
-
     /// <summary>
     /// A class to store style information
     /// </summary>
@@ -201,6 +194,64 @@ namespace StylesRenaming
                 val += String.Format("   Param: {0}: {1}\n", kp.Key, kp.Value);
             }
             return val;
+        }
+    }
+
+    class RenameOption
+    {
+        readonly StyleBase StyleBase;
+        readonly PropertyInfo PropInf;
+        readonly ArrayList StyleList;
+        readonly Type ObjectType;
+        readonly object MyStylesRoot;
+
+        public RenameOption(StyleBase stb, PropertyInfo pf, ArrayList stl, Type obt, object mstr)
+        {
+            StyleBase = stb;
+            PropInf = pf;
+            StyleList = stl;
+            ObjectType = obt;
+            MyStylesRoot = mstr;
+        }
+
+        public void RenameByTemplate()
+        {
+            if (StyleBase.Name.Contains(StartForm.OldNameStyle))
+            {
+                try
+                {
+                    StyleBase.Name = StyleBase.Name.Replace(StartForm.OldNameStyle, StartForm.NewNameStyle);
+
+                    Main main = new Main();
+                    main.AddStyleToList(StyleBase, PropInf, StyleList);
+                    main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        public void RenameAccurate()
+        {
+            if (StyleBase.Name == StartForm.OldNameStyle)
+            {
+                try
+                {
+                    StyleBase.Name = StartForm.NewNameStyle;
+
+                    Main main = new Main();
+                    main.AddStyleToList(StyleBase, PropInf, StyleList);
+                    main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
         }
     }
 }

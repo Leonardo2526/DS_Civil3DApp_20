@@ -5,11 +5,36 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StylesRenaming"
              mc:Ignorable="d" 
-             Height="450" Width="500">
+             Background="Bisque" Height="450" Width="500">
     <Grid>
-        <StackPanel>
-            <Button x:Name="Start" Content="Start" Margin="100,100,100,10" Click="Start_Click" />
+        <StackPanel Margin="10,10,10,10" >
+            <Label Content="Rename" HorizontalAlignment="Left" />
+            <Border BorderBrush="Gray" BorderThickness="1" >
+                <StackPanel Margin="10,10,10,10">
+                    <Label Content="Old name:" HorizontalAlignment="Left" />
+                    <TextBox x:Name="OldName" Text="" Width="100" Height="30" Background="White" 
+                         VerticalContentAlignment="Center" HorizontalAlignment="Left" TextChanged="OldName_TextChanged" />
+                    <Label Content="New name:" HorizontalAlignment="Left" />
+                    <TextBox x:Name="NewName" Text="" Width="100" Height="30" Background="White" 
+                         VerticalContentAlignment="Center" HorizontalAlignment="Left" />
+                    <Button x:Name="OK" Content="OK" Width="80" Margin="0,10,0,0" Background = "LightBlue"
+                        Click="OK_Click" HorizontalAlignment="Left" Padding="10"/>
+                </StackPanel>
+            </Border>
+            <Label Content="Add options" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+            <Border BorderBrush="Gray" BorderThickness="1" >
+                <StackPanel Margin="10,10,10,10" >
+                    <Label Content="Input text to add: " HorizontalAlignment="Left" />
+                    <TextBox x:Name="AddTxt" Text="" Width="100" Height="30" Background="White" 
+                         VerticalContentAlignment="Center" HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="AddToBegining" Content="Begin with" Margin="0,10,10,0" Background = "LightBlue"
+                        Click="AddToBegining_Click" HorizontalAlignment="Left" Padding="10" Width="80"/>
+                        <Button x:Name="AddToEnd" Content="End with" Margin="0,10,0,0" Background = "LightBlue"
+                        Click="AddToEnd_Click" HorizontalAlignment="Left" Padding="10" Width="80"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
-
     </Grid>
 </Window>
