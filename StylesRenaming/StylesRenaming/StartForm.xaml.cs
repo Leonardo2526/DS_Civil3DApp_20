@@ -30,12 +30,24 @@ namespace StylesRenaming
         public static string NewNameStyle;
 
         public static string TextToAdd;
+        public static bool AddTxtToBegin;
+        public static bool AddTxtToEnd;
+        public static bool RenameOption;
+        public static bool TrimOption;
+
 
 
 
         public StartForm()
         {
-            InitializeComponent(); 
+            InitializeComponent();
+            OldNameStyle = "";
+            NewNameStyle = "";
+            TextToAdd = "";
+            AddTxtToBegin = false;
+            AddTxtToEnd = false;
+            RenameOption = false;
+            TrimOption = false;
         }
       
         private void OK_Click(object sender, RoutedEventArgs e)
@@ -43,14 +55,15 @@ namespace StylesRenaming
             if (OldName.Text == "")
             {
                 OldName.ToolTip = "Input text";
-            }
-            else if (NewName.Text == "")
-            {
-                NewName.ToolTip = "Input text";
-            }
+            }           
             else
             {
+                if (NewName.Text == "")
+                    TrimOption = true;
+
                 this.Close();
+
+                RenameOption = true;
 
                 OldNameStyle = OldName.Text;
                 NewNameStyle = NewName.Text;
@@ -64,7 +77,7 @@ namespace StylesRenaming
 
         private void OldName_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+           
         }
 
         private void AddToBegining_Click(object sender, RoutedEventArgs e)
@@ -76,7 +89,7 @@ namespace StylesRenaming
             else
             {
                 this.Close();
-
+                AddTxtToBegin = true;
                 TextToAdd = AddTxt.Text;
 
                 Main main = new Main();
@@ -93,7 +106,7 @@ namespace StylesRenaming
             else
             {
                 this.Close();
-
+                AddTxtToEnd = true;
                 TextToAdd = AddTxt.Text;
 
                 Main main = new Main();

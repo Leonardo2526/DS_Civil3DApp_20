@@ -32,7 +32,10 @@ namespace StylesRenaming
                     ts.Commit();
                 }
             }
-            MessageBox.Show("Done!");
+            if (styleList.Count == 0)
+                MessageBox.Show("No styles has been found with such names!");
+            else
+            MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
 
             return styleList;
 
@@ -51,8 +54,6 @@ namespace StylesRenaming
 
             foreach (PropertyInfo pf in properties)
             {
-                //if (pf.Name == "SectionStyles")
-                //MessageBox.Show("SectionStyles");
 
                 // If it's a collection, let's iterate through it
                 if (pf.PropertyType.ToString().Contains("Collection"))
@@ -104,12 +105,17 @@ namespace StylesRenaming
                 RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
 
                 //Check rename options
-                if (StartForm.OldNameStyle.Contains("*"))
-                    renameOption.RenameByTemplate();
-                else
-                    renameOption.RenameAccurate();
-
-              
+                if (StartForm.RenameOption == true)
+                {
+                    if (StartForm.OldNameStyle.Contains("*"))
+                        renameOption.RenameByTemplate();
+                    else
+                        renameOption.RenameAccurate();
+                }               
+                if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
+                    renameOption.AddToBegin();
+                else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
+                    renameOption.AddToEnd();
             }
         }
 
@@ -214,17 +220,48 @@ namespace StylesRenaming
             MyStylesRoot = mstr;
         }
 
+        private void AddStyles()
+        {
+            Main main = new Main();
+            main.AddStyleToList(StyleBase, PropInf, StyleList);
+            main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
+        }
+
+
+
         public void RenameByTemplate()
         {
-            if (StyleBase.Name.Contains(StartForm.OldNameStyle))
+            char[] MyChar = { (char)42 };
+
+            string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
+
+            if (StyleBase.Name.Contains(trimmedName))
             {
                 try
                 {
-                    StyleBase.Name = StyleBase.Name.Replace(StartForm.OldNameStyle, StartForm.NewNameStyle);
+                    if (StartForm.TrimOption == true)
+                    {
+                        if (StartForm.OldNameStyle.StartsWith(MyChar.ToString()))
+                            StyleBase.Name = StyleBase.Name.Remove(StyleBase.Name.Length - trimmedName.Length, trimmedName.Length);
+                        else if (StartForm.OldNameStyle.EndsWith(MyChar.ToString()))
+                            StyleBase.Name = StyleBase.Name.Remove(0, trimmedName.Length);
+                    }
+                      else
+                    {
+                        if (StartForm.OldNameStyle.StartsWith(MyChar.ToString()))
+                        {
+                            string trimmedString = StyleBase.Name.Substring(0, StyleBase.Name.Length - trimmedName.Length);
+                            StyleBase.Name = trimmedString + StartForm.NewNameStyle;
 
-                    Main main = new Main();
-                    main.AddStyleToList(StyleBase, PropInf, StyleList);
-                    main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
+                        }
+                        else if (StartForm.OldNameStyle.EndsWith(MyChar.ToString()))
+                        {
+                            string trimmedString = StyleBase.Name.Substring(trimmedName.Length - 1);
+                            StyleBase.Name = StartForm.NewNameStyle + trimmedString;
+                        }
+                    }
+
+                    AddStyles();
                 }
 
                 catch (Exception ex)
@@ -242,9 +279,43 @@ namespace StylesRenaming
                 {
                     StyleBase.Name = StartForm.NewNameStyle;
 
-                    Main main = new Main();
-                    main.AddStyleToList(StyleBase, PropInf, StyleList);
-                    main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
+                    AddStyles();
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        public void AddToBegin()
+        {
+            if (!StyleBase.Name.StartsWith(StartForm.TextToAdd))
+            {
+                try
+                {
+                    StyleBase.Name = StartForm.TextToAdd + StyleBase.Name;
+
+                    AddStyles();
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        public void AddToEnd()
+        {
+            if (!StyleBase.Name.EndsWith(StartForm.TextToAdd))
+            {
+                try
+                {
+                    StyleBase.Name += StartForm.TextToAdd;
+
+                    AddStyles();
                 }
 
                 catch (Exception ex)

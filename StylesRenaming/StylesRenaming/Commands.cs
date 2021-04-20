@@ -21,7 +21,7 @@ namespace StylesRenaming
             StartForm startForm = new StartForm();
             startForm.ShowDialog();
         }
-     
+
         public void Terminate()
         {
             MessageBox.Show("Goodbye!");
