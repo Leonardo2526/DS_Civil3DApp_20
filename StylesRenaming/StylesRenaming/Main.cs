@@ -107,8 +107,10 @@ namespace StylesRenaming
                 //Check rename options
                 if (StartForm.RenameOption == true)
                 {
-                    if (StartForm.OldNameStyle.Contains("*"))
-                        renameOption.RenameByTemplate();
+                    if (StartForm.OldNameStyle.EndsWith("*"))
+                        renameOption.RenameStartWith();
+                    else if (StartForm.OldNameStyle.StartsWith("*"))
+                        renameOption.RenameEndWith();
                     else
                         renameOption.RenameAccurate();
                 }               
@@ -227,40 +229,24 @@ namespace StylesRenaming
             main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
         }
 
-
-
-        public void RenameByTemplate()
+        public void RenameStartWith()
         {
             char[] MyChar = { (char)42 };
-
             string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
 
-            if (StyleBase.Name.Contains(trimmedName))
+            if (StyleBase.Name.StartsWith(trimmedName))
             {
                 try
                 {
                     if (StartForm.TrimOption == true)
                     {
-                        if (StartForm.OldNameStyle.StartsWith(MyChar.ToString()))
-                            StyleBase.Name = StyleBase.Name.Remove(StyleBase.Name.Length - trimmedName.Length, trimmedName.Length);
-                        else if (StartForm.OldNameStyle.EndsWith(MyChar.ToString()))
-                            StyleBase.Name = StyleBase.Name.Remove(0, trimmedName.Length);
+                        StyleBase.Name = StyleBase.Name.Remove(0, trimmedName.Length);
                     }
-                      else
+                    else
                     {
-                        if (StartForm.OldNameStyle.StartsWith(MyChar.ToString()))
-                        {
-                            string trimmedString = StyleBase.Name.Substring(0, StyleBase.Name.Length - trimmedName.Length);
-                            StyleBase.Name = trimmedString + StartForm.NewNameStyle;
-
-                        }
-                        else if (StartForm.OldNameStyle.EndsWith(MyChar.ToString()))
-                        {
-                            string trimmedString = StyleBase.Name.Substring(trimmedName.Length - 1);
-                            StyleBase.Name = StartForm.NewNameStyle + trimmedString;
-                        }
+                        string trimmedString = StyleBase.Name.Substring(trimmedName.Length);
+                        StyleBase.Name = StartForm.NewNameStyle + trimmedString;
                     }
-
                     AddStyles();
                 }
 
@@ -271,6 +257,35 @@ namespace StylesRenaming
             }
         }
 
+        public void RenameEndWith()
+        {
+            char[] MyChar = { (char)42 };
+            string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
+
+            if (StyleBase.Name.EndsWith(trimmedName))
+            {
+                try
+                {
+                    if (StartForm.TrimOption == true)
+                    {
+                        int startInd = StyleBase.Name.Length - trimmedName.Length;
+                        StyleBase.Name = StyleBase.Name.Remove(startInd, trimmedName.Length);
+                    }
+                    else
+                    {
+                        string trimmedString = StyleBase.Name.Substring(0, StyleBase.Name.Length - trimmedName.Length);
+                        StyleBase.Name = trimmedString + StartForm.NewNameStyle;
+                    }
+                    AddStyles();
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+      
         public void RenameAccurate()
         {
             if (StyleBase.Name == StartForm.OldNameStyle)
