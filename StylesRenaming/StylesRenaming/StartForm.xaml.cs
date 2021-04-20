@@ -26,47 +26,22 @@ namespace StylesRenaming
     /// </summary>
     public partial class StartForm : Window
     {
-        CivilDocument doc;
-        Document adoc;
-        Editor ed;
+     
 
-        public StartForm(CivilDocument Doc, Document Adoc, Editor Ed)
+        public StartForm()
         {
-            InitializeComponent();
-            doc = Doc;
-            adoc = Adoc;
-            ed = Ed;
+            InitializeComponent(); 
         }
       
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-            using (Transaction ts = adoc.Database.TransactionManager.StartTransaction())
-            {
-                try
-                {
 
-                    foreach (ObjectId objId in doc.CorridorCollection)
-                    {
-                        Corridor oCorridor = ts.GetObject(objId, OpenMode.ForRead) as Corridor;
-                        adoc.Editor.WriteMessage("Corridor: {0}\nLargest possible triangle side: {1}\n",
-                            oCorridor.Name, oCorridor.MaximumTriangleSideLength);
-                    }
+            Main main = new Main();
+            main.GetStyles();
 
-                }
-                catch (ArgumentException ex)
-                {
-                    ed.WriteMessage(ex.Message);
-                }
-
-                //Transaction is closed
-                ts.Commit();
-            }
-
-            ObjectId pointStyleId = doc.Styles.PointStyles.Add("Name");
-
-            MessageBox.Show("Done!");
         }
+
     }
 
 }
