@@ -19,7 +19,7 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices;
 
-namespace StylesRenaming
+namespace StylesRename
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
@@ -54,7 +54,8 @@ namespace StylesRenaming
         {
             if (OldName.Text == "")
             {
-                OldName.ToolTip = "Input text";
+                OldName.Text = "Input text";
+                OldName.Foreground = Brushes.Red;
             }           
             else
             {
@@ -73,18 +74,14 @@ namespace StylesRenaming
             }
            
 
-        }
-
-        private void OldName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-           
-        }
+        }      
 
         private void AddToBegining_Click(object sender, RoutedEventArgs e)
         {
             if (AddTxt.Text == "")
             {
-                AddTxt.ToolTip = "Input text";
+                AddTxt.Text = "Input text";
+                AddTxt.Foreground = Brushes.Red;
             }
             else
             {
@@ -101,7 +98,8 @@ namespace StylesRenaming
         {
             if (AddTxt.Text == "")
             {
-                AddTxt.ToolTip = "Input text";
+                AddTxt.Text = "Input text";
+                AddTxt.Foreground = Brushes.Red;
             }
             else
             {
@@ -112,6 +110,25 @@ namespace StylesRenaming
                 Main main = new Main();
                 main.GetStyles();
             }
+        }
+
+        private void OldName_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (OldName.Foreground == Brushes.Red)
+            {
+                OldName.Text = "";
+                OldName.Foreground = Brushes.Black;
+            }
+        }
+
+        private void AddTxt_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (AddTxt.Foreground == Brushes.Red)
+            {
+                AddTxt.Text = "";
+                AddTxt.Foreground = Brushes.Black;
+            }
+          
         }
     }
 

@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices.Styles;
+using DS_SystemTools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,13 +10,17 @@ using System.Reflection;
 using System.Windows.Forms;
 using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
-namespace StylesRenaming
+namespace StylesRename
 {
     class Main
     {
         private static Transaction ts;
 
-        public ArrayList GetStyles()
+        //Get current date and time    
+        readonly string CurDate = DateTime.Now.ToString("yyMMdd");
+        readonly string CurDateTime = DateTime.Now.ToString("yyMMdd_HHmmss");
+
+        public void GetStyles()
         {
 
             ArrayList styleList = new ArrayList();
@@ -35,10 +40,49 @@ namespace StylesRenaming
             if (styleList.Count == 0)
                 MessageBox.Show("No styles has been found with such names!");
             else
-            MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+            {
+                MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+                WriteToLog(styleList);
+            }
+        }
 
-            return styleList;
+        void WriteToLog(ArrayList styleList)
+        {
+            DS_Tools dS_Tools = new DS_Tools
+            {
+                DS_LogName = CurDateTime + "_StylesRename_Log.txt",
+                DS_LogOutputPath = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Desktop\Logs\")
+            };
 
+            dS_Tools.DS_StreamWriter("Styles updated: ");
+
+            try
+            {
+                //get type list without duplicates
+                List<string> typleList = new List<string>();
+                foreach (StyleInfo stf in styleList)
+                {
+                    if (!typleList.Contains(stf.type))
+                        typleList.Add(stf.type);
+                }
+
+                //Output to Log
+                foreach (string type in typleList)
+                {
+                    dS_Tools.DS_StreamWriter("\n" + type);
+                    foreach (StyleInfo st in styleList)
+                    {
+                        if (st.type == type)
+                            dS_Tools.DS_StreamWriter(st.name.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            dS_Tools.DS_FileExistMessage();
         }
 
         /// <summary>
@@ -107,13 +151,15 @@ namespace StylesRenaming
                 //Check rename options
                 if (StartForm.RenameOption == true)
                 {
-                    if (StartForm.OldNameStyle.EndsWith("*"))
-                        renameOption.RenameStartWith();
+                    if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
+                        renameOption.RenameContain();
                     else if (StartForm.OldNameStyle.StartsWith("*"))
                         renameOption.RenameEndWith();
+                    else if (StartForm.OldNameStyle.EndsWith("*"))
+                        renameOption.RenameStartWith();
                     else
                         renameOption.RenameAccurate();
-                }               
+                }
                 if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
                     renameOption.AddToBegin();
                 else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
@@ -285,7 +331,36 @@ namespace StylesRenaming
                 }
             }
         }
-      
+
+        public void RenameContain()
+        {
+            char[] MyChar = { (char)42 };
+            string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
+
+            if (StyleBase.Name.Contains(trimmedName))
+            {
+                try
+                {
+                    if (StartForm.TrimOption == true)
+                    {
+                        StyleBase.Name = StyleBase.Name.Replace(trimmedName, "");
+                    }
+                    else
+                    {
+                        string trimmedString = StyleBase.Name.Substring(trimmedName.Length);
+                        StyleBase.Name = StyleBase.Name.Replace(trimmedName, StartForm.NewNameStyle);
+                    }
+                    AddStyles();
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+
         public void RenameAccurate()
         {
             if (StyleBase.Name == StartForm.OldNameStyle)
