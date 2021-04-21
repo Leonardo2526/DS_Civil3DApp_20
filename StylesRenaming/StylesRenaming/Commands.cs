@@ -1,7 +1,7 @@
 ﻿using Autodesk.AutoCAD.Runtime;
 using System.Windows.Forms;
 
-namespace StylesRenaming
+namespace StylesRename
 {
     public class Commands : IExtensionApplication
     {
