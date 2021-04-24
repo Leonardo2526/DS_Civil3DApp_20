@@ -41,8 +41,18 @@ namespace StylesRename
                 MessageBox.Show("No styles has been found with such names!");
             else
             {
-                MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
-                WriteToLog(styleList);
+                if (StartForm.ExportStyles == true)
+                {
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been found.");
+                    WriteToExcel(styleList);
+                    MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
+                }
+                else
+                {
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+                    WriteToLog(styleList);
+                }
+
             }
         }
 
@@ -83,6 +93,29 @@ namespace StylesRename
             }
 
             dS_Tools.DS_FileExistMessage();
+        }
+
+        void WriteToExcel(ArrayList styleList)
+        {
+            try
+            {
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.StartExcel();
+
+                //write to sheet
+                int i = 1;
+                foreach (StyleInfo stf in styleList)
+                {
+                    i++;
+                    excelExport.WriteToSheet(i, stf.parent, stf.type, stf.name);
+                }
+                excelExport.SaveExcel();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
         }
 
         /// <summary>
@@ -135,9 +168,8 @@ namespace StylesRename
         /// <param name="myStylesRoot"></param>
         public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
         {
-
             object res = objectType.InvokeMember(pf.Name,
-                            BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
+                        BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
             if (res.Equals(null))
                 return;
 
@@ -146,7 +178,10 @@ namespace StylesRename
             foreach (ObjectId sbid in scBase)
             {
                 StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
+
                 RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
+                if (StartForm.ExportStyles == true)
+                    AddStyleToList(stylebase, pf, styleList);
 
                 //Check rename options
                 if (StartForm.RenameOption == true)
@@ -164,7 +199,9 @@ namespace StylesRename
                     renameOption.AddToBegin();
                 else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
                     renameOption.AddToEnd();
+
             }
+
         }
 
         public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
@@ -268,7 +305,7 @@ namespace StylesRename
             MyStylesRoot = mstr;
         }
 
-        private void AddStyles()
+        public void AddStyles()
         {
             Main main = new Main();
             main.AddStyleToList(StyleBase, PropInf, StyleList);
