@@ -41,7 +41,11 @@ namespace StylesRename
                 MessageBox.Show("No styles has been found with such names!");
             else
             {
+                if(StartForm.RenameOption == true)
                 MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+                else
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been found.");
+
                 WriteToLog(styleList);
             }
         }
@@ -134,37 +138,41 @@ namespace StylesRename
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
         public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
-        {
-
-            object res = objectType.InvokeMember(pf.Name,
+        {           
+                object res = objectType.InvokeMember(pf.Name,
                             BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
-            if (res.Equals(null))
-                return;
+                if (res.Equals(null))
+                    return;
 
-            StyleCollectionBase scBase = (StyleCollectionBase)res;
+                StyleCollectionBase scBase = (StyleCollectionBase)res;
 
-            foreach (ObjectId sbid in scBase)
-            {
-                StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
-                RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
-
-                //Check rename options
-                if (StartForm.RenameOption == true)
+                foreach (ObjectId sbid in scBase)
                 {
-                    if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
-                        renameOption.RenameContain();
-                    else if (StartForm.OldNameStyle.StartsWith("*"))
-                        renameOption.RenameEndWith();
-                    else if (StartForm.OldNameStyle.EndsWith("*"))
-                        renameOption.RenameStartWith();
-                    else
-                        renameOption.RenameAccurate();
+                    StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
+
+                    RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
+                if (StartForm.ExportStyles == true)
+                    AddStyleToList(stylebase, pf, styleList);
+                    
+                    //Check rename options
+                    if (StartForm.RenameOption == true)
+                    {
+                        if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
+                            renameOption.RenameContain();
+                        else if (StartForm.OldNameStyle.StartsWith("*"))
+                            renameOption.RenameEndWith();
+                        else if (StartForm.OldNameStyle.EndsWith("*"))
+                            renameOption.RenameStartWith();
+                        else
+                            renameOption.RenameAccurate();
+                    }
+                    if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
+                        renameOption.AddToBegin();
+                    else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
+                        renameOption.AddToEnd();
+                    
                 }
-                if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
-                    renameOption.AddToBegin();
-                else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
-                    renameOption.AddToEnd();
-            }
+           
         }
 
         public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
@@ -268,7 +276,7 @@ namespace StylesRename
             MyStylesRoot = mstr;
         }
 
-        private void AddStyles()
+        public void AddStyles()
         {
             Main main = new Main();
             main.AddStyleToList(StyleBase, PropInf, StyleList);

@@ -24,7 +24,7 @@ namespace StylesRename
 
         public void Terminate()
         {
-            MessageBox.Show("Goodbye!");
+           
         }
 
         /// <summary>
