@@ -41,12 +41,18 @@ namespace StylesRename
                 MessageBox.Show("No styles has been found with such names!");
             else
             {
-                if(StartForm.RenameOption == true)
-                MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
-                else
+                if (StartForm.ExportStyles == true)
+                {
                     MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been found.");
+                    WriteToExcel(styleList);
+                    MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
+                }
+                else
+                {
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+                    WriteToLog(styleList);
+                }
 
-                WriteToLog(styleList);
             }
         }
 
@@ -87,6 +93,29 @@ namespace StylesRename
             }
 
             dS_Tools.DS_FileExistMessage();
+        }
+
+        void WriteToExcel(ArrayList styleList)
+        {
+            try
+            {
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.StartExcel();
+
+                //write to sheet
+                int i = 1;
+                foreach (StyleInfo stf in styleList)
+                {
+                    i++;
+                    excelExport.WriteToSheet(i, stf.parent, stf.type, stf.name);
+                }
+                excelExport.SaveExcel();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
         }
 
         /// <summary>
@@ -138,41 +167,41 @@ namespace StylesRename
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
         public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
-        {           
-                object res = objectType.InvokeMember(pf.Name,
-                            BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
-                if (res.Equals(null))
-                    return;
+        {
+            object res = objectType.InvokeMember(pf.Name,
+                        BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
+            if (res.Equals(null))
+                return;
 
-                StyleCollectionBase scBase = (StyleCollectionBase)res;
+            StyleCollectionBase scBase = (StyleCollectionBase)res;
 
-                foreach (ObjectId sbid in scBase)
-                {
-                    StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
+            foreach (ObjectId sbid in scBase)
+            {
+                StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
 
-                    RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
+                RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
                 if (StartForm.ExportStyles == true)
                     AddStyleToList(stylebase, pf, styleList);
-                    
-                    //Check rename options
-                    if (StartForm.RenameOption == true)
-                    {
-                        if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
-                            renameOption.RenameContain();
-                        else if (StartForm.OldNameStyle.StartsWith("*"))
-                            renameOption.RenameEndWith();
-                        else if (StartForm.OldNameStyle.EndsWith("*"))
-                            renameOption.RenameStartWith();
-                        else
-                            renameOption.RenameAccurate();
-                    }
-                    if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
-                        renameOption.AddToBegin();
-                    else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
-                        renameOption.AddToEnd();
-                    
+
+                //Check rename options
+                if (StartForm.RenameOption == true)
+                {
+                    if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
+                        renameOption.RenameContain();
+                    else if (StartForm.OldNameStyle.StartsWith("*"))
+                        renameOption.RenameEndWith();
+                    else if (StartForm.OldNameStyle.EndsWith("*"))
+                        renameOption.RenameStartWith();
+                    else
+                        renameOption.RenameAccurate();
                 }
-           
+                if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
+                    renameOption.AddToBegin();
+                else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
+                    renameOption.AddToEnd();
+
+            }
+
         }
 
         public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
