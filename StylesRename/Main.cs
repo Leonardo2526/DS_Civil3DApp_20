@@ -41,8 +41,18 @@ namespace StylesRename
                 MessageBox.Show("No styles has been found with such names!");
             else
             {
-                MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
-                WriteToLog(styleList);
+                if (StartForm.ExportStyles == true)
+                {
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been found.");
+                    WriteToExcel(styleList);
+                    MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
+                }
+                else
+                {
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+                    WriteToLog(styleList);
+                }
+
             }
         }
 
@@ -85,6 +95,29 @@ namespace StylesRename
             dS_Tools.DS_FileExistMessage();
         }
 
+        void WriteToExcel(ArrayList styleList)
+        {
+            try
+            {
+                ExcelExport excelExport = new ExcelExport();
+                excelExport.StartExcel();
+
+                //write to sheet
+                int i = 1;
+                foreach (StyleInfo stf in styleList)
+                {
+                    i++;
+                    excelExport.WriteToSheet(i, stf.parent, stf.type, stf.name);
+                }
+                excelExport.SaveExcel();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+        }
+
         /// <summary>
         ///  Looks at a "root" object for styles.  Each root class contains a group of
         ///  collections (derived from StyleBaseCollection), or other style root objects.
@@ -100,11 +133,8 @@ namespace StylesRename
             {
 
                 // If it's a collection, let's iterate through it
-                if (pf.PropertyType.ToString().Contains("Collection"))
-                {
-                    // Debug.WriteLine(String.Format("Processing collection: {0}", pf.Name));
+                if (pf.PropertyType.ToString().Contains("Collection") && pf.Name != "PointCloudStyles")
                     ListCollection(objectType, pf, root, styleList);
-                }
                 else if (pf.PropertyType.ToString().Contains("Root"))
                 {
                     // Call ourselves recursively on this style root object                    
@@ -134,37 +164,41 @@ namespace StylesRename
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
         public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
-        {
-
+        {            
             object res = objectType.InvokeMember(pf.Name,
-                            BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
+                        BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
             if (res.Equals(null))
                 return;
 
-            StyleCollectionBase scBase = (StyleCollectionBase)res;
+             StyleCollectionBase scBase = (StyleCollectionBase)res;          
 
             foreach (ObjectId sbid in scBase)
-            {
-                StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
-                RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
-
-                //Check rename options
-                if (StartForm.RenameOption == true)
                 {
-                    if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
-                        renameOption.RenameContain();
-                    else if (StartForm.OldNameStyle.StartsWith("*"))
-                        renameOption.RenameEndWith();
-                    else if (StartForm.OldNameStyle.EndsWith("*"))
-                        renameOption.RenameStartWith();
-                    else
-                        renameOption.RenameAccurate();
+                    StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
+
+                    RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
+                    if (StartForm.ExportStyles == true)
+                        AddStyleToList(stylebase, pf, styleList);
+
+                    //Check rename options
+                    if (StartForm.RenameOption == true)
+                    {
+                        if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
+                            renameOption.RenameContain();
+                        else if (StartForm.OldNameStyle.StartsWith("*"))
+                            renameOption.RenameEndWith();
+                        else if (StartForm.OldNameStyle.EndsWith("*"))
+                            renameOption.RenameStartWith();
+                        else
+                            renameOption.RenameAccurate();
+                    }
+                    if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
+                        renameOption.AddToBegin();
+                    else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
+                        renameOption.AddToEnd();
                 }
-                if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
-                    renameOption.AddToBegin();
-                else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
-                    renameOption.AddToEnd();
-            }
+          
+
         }
 
         public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
@@ -268,7 +302,7 @@ namespace StylesRename
             MyStylesRoot = mstr;
         }
 
-        private void AddStyles()
+        public void AddStyles()
         {
             Main main = new Main();
             main.AddStyleToList(StyleBase, PropInf, StyleList);

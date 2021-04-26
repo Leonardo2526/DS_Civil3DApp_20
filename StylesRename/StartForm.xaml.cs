@@ -17,6 +17,8 @@ namespace StylesRename
         public static bool AddTxtToEnd;
         public static bool RenameOption;
         public static bool TrimOption;
+        public static bool ExportStyles;
+
 
 
 
@@ -31,6 +33,7 @@ namespace StylesRename
             AddTxtToEnd = false;
             RenameOption = false;
             TrimOption = false;
+            ExportStyles = false;
         }
 
         private void OK_Click(object sender, RoutedEventArgs e)
@@ -112,6 +115,15 @@ namespace StylesRename
                 AddTxt.Foreground = Brushes.Black;
             }
 
+        }
+
+        private void ExportToExcel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            ExportStyles = true;
+
+            Main main = new Main();
+            main.GetStyles();
         }
     }
 
