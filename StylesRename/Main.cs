@@ -133,11 +133,8 @@ namespace StylesRename
             {
 
                 // If it's a collection, let's iterate through it
-                if (pf.PropertyType.ToString().Contains("Collection"))
-                {
-                    // Debug.WriteLine(String.Format("Processing collection: {0}", pf.Name));
+                if (pf.PropertyType.ToString().Contains("Collection") && pf.Name != "PointCloudStyles")
                     ListCollection(objectType, pf, root, styleList);
-                }
                 else if (pf.PropertyType.ToString().Contains("Root"))
                 {
                     // Call ourselves recursively on this style root object                    
@@ -167,40 +164,40 @@ namespace StylesRename
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
         public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
-        {
+        {            
             object res = objectType.InvokeMember(pf.Name,
                         BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
             if (res.Equals(null))
                 return;
 
-            StyleCollectionBase scBase = (StyleCollectionBase)res;
+             StyleCollectionBase scBase = (StyleCollectionBase)res;          
 
             foreach (ObjectId sbid in scBase)
-            {
-                StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
-
-                RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
-                if (StartForm.ExportStyles == true)
-                    AddStyleToList(stylebase, pf, styleList);
-
-                //Check rename options
-                if (StartForm.RenameOption == true)
                 {
-                    if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
-                        renameOption.RenameContain();
-                    else if (StartForm.OldNameStyle.StartsWith("*"))
-                        renameOption.RenameEndWith();
-                    else if (StartForm.OldNameStyle.EndsWith("*"))
-                        renameOption.RenameStartWith();
-                    else
-                        renameOption.RenameAccurate();
-                }
-                if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
-                    renameOption.AddToBegin();
-                else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
-                    renameOption.AddToEnd();
+                    StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
 
-            }
+                    RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
+                    if (StartForm.ExportStyles == true)
+                        AddStyleToList(stylebase, pf, styleList);
+
+                    //Check rename options
+                    if (StartForm.RenameOption == true)
+                    {
+                        if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
+                            renameOption.RenameContain();
+                        else if (StartForm.OldNameStyle.StartsWith("*"))
+                            renameOption.RenameEndWith();
+                        else if (StartForm.OldNameStyle.EndsWith("*"))
+                            renameOption.RenameStartWith();
+                        else
+                            renameOption.RenameAccurate();
+                    }
+                    if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
+                        renameOption.AddToBegin();
+                    else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
+                        renameOption.AddToEnd();
+                }
+          
 
         }
 
