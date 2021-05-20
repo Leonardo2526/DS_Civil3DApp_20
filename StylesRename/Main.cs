@@ -143,6 +143,9 @@ namespace StylesRename
 
             StyleCollectionBase scBase = (StyleCollectionBase)res;
 
+            if (scBase.Count == 0)
+                return;
+
             foreach (ObjectId sbid in scBase)
             {
                 StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
