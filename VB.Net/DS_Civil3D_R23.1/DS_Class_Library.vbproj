@@ -7,7 +7,7 @@
     <ProjectGuid>{2AA04FE6-912A-4B1F-B635-F06E10B5357A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>DS_Class_Library</RootNamespace>
-    <AssemblyName>DS_Class_Library</AssemblyName>
+    <AssemblyName>DS.VBNet</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
@@ -20,7 +20,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>DS_Class_Library.xml</DocumentationFile>
+    <DocumentationFile>DS.VBNet.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -30,8 +30,9 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>DS_Class_Library.xml</DocumentationFile>
+    <DocumentationFile>DS.VBNet.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
