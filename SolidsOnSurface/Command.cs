@@ -26,8 +26,14 @@ namespace SolidsOnSurface
         [CommandMethod("DS_SolidsOnSurface")]
         public void MyCommand()
         {
-            Main class2 = new Main();
-            class2.GetSurfaceData();
+            Main main = new Main();
+            main.GetSurfaceData();
+        }
+
+        [CommandMethod("DS_ParseSolids")]
+        public void DS_ParseSolids()
+        {
+          
         }
 
         [CommandMethod("ShowForm")]

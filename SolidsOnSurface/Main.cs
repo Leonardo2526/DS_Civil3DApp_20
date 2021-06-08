@@ -29,18 +29,16 @@ namespace SolidsOnSurface
             ArrayList styleList = new ArrayList();
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             DocumentLock acLckDoc = doc.LockDocument();
-             
-            GetXY(out float X, out float Y);
+            CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
+            Editor editor = doc.Editor;
 
-
-
+            GetXY(out float X, out float Y);           
 
             using (acLckDoc)
             {
                 using (ts = doc.Database.TransactionManager.StartTransaction())
                 {
-                    CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
-                    Editor editor = doc.Editor;
+                    
 
                     ObjectIdCollection SurfaceIds = CivilDoc.GetSurfaceIds();
                     foreach (ObjectId surfaceId in SurfaceIds)
@@ -57,15 +55,15 @@ namespace SolidsOnSurface
 
                         float radius = 1;
                          
-                        PointOnCircle(radius, rad, X, Y, out float x, out float y);
+                        GetPointCoordinatesByRad(radius, rad, X, Y, out float x, out float y);
 
                         float z = (float)oSurface.FindElevationAtXY(x, y);
                         //CreatePoint(acLckDoc, doc, x, y, z);
 
                         float slopeRad = (float)Math.Atan(slope);
 
-                        Solids dS_Solid = new Solids(X, Y, Z, x, y, z, slopeRad);
-                        dS_Solid.Rotate_3DBox(doc);
+                        Solids dS_Solid = new Solids(X, Y, Z, x, y, z, slopeRad, 0);
+                        dS_Solid.ParseBlocks(doc);
                     }
 
                     MessageBox.Show("Done!");
@@ -99,30 +97,22 @@ namespace SolidsOnSurface
             Y = float.Parse(y);
         }
 
-        public void CreatePoint(DocumentLock acLckDoc, Document doc, float X, float Y, float Z)
-        {
-           
-               
-                    CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
-                    Editor editor = doc.Editor;
-                    // _civildoc is the active CivilDocument instance.
-                    CogoPointCollection cogoPoints = CivilDoc.CogoPoints;
 
-
-                    Point3d[] points = { new Point3d(X, Y, Z)};
-
-                    Point3dCollection locations = new Point3dCollection(points);
-                                        cogoPoints.Add(locations,true);
-           
-           
-        }
-
-
-        public static void PointOnCircle(float radius, float rad, double X, double Y, out float x, out float y)
+        public static void GetPointCoordinatesByRad(float radius, float rad, double X, double Y, out float x, out float y)
         {
             // Convert from degrees to radians via multiplication by PI/180        
             x = (float)((radius * Math.Cos(rad - (Math.PI) / 2)) + X);
             y = (float)((radius * Math.Sin(rad - (Math.PI) / 2)) + Y);          
         }
+
+        private float EnterData(Editor editor)
+        {
+            PromptDoubleOptions pStrOpts = new PromptDoubleOptions("Enter Solid hight: ");
+            PromptDoubleResult pStrRes = editor.GetDouble(pStrOpts);
+            float hight = (float)pStrRes.Value;
+           
+            return hight;
+        }
+        
     }
 }

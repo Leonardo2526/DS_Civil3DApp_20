@@ -16,6 +16,7 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using DBObject = Autodesk.AutoCAD.DatabaseServices.DBObject;
 
 namespace SolidsOnSurface
 {
@@ -28,8 +29,9 @@ namespace SolidsOnSurface
         public float Y1;
         public float Z1;
         public float SlopeRad;
+        public float Hight;
 
-        public Solids(float x0, float y0, float z0, float x1, float y1, float z1, float slopeRad)
+        public Solids(float x0, float y0, float z0, float x1, float y1, float z1, float slopeRad, float hight)
         {
             X0 = x0;
             Y0 = y0;
@@ -38,8 +40,8 @@ namespace SolidsOnSurface
             Y1 = y1;
             Z1 = z1;
             SlopeRad = slopeRad;
+            Hight = hight;
         }
-
 
         public void Rotate_3DBox(Document doc)
         {
@@ -93,6 +95,72 @@ namespace SolidsOnSurface
                 // Save the new objects to the database
                 acTrans.Commit();
             }
+        }
+
+        public void DisplaceBlock(Document doc, Database acCurDb, BlockReference br)
+        {
+          
+
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                // Open the Block table for read
+                BlockTable acBlkTbl;
+                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
+                                             OpenMode.ForWrite) as BlockTable;
+
+                // Open the Block table record Model space for write
+                BlockTableRecord acBlkTblRec;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
+                                                OpenMode.ForWrite) as BlockTableRecord;
+
+                float Zbottom = Z0;
+
+                // Position the center of the 3D solid at (5,5,0)
+                br.TransformBy(Matrix3d.Displacement(new Point3d(0, 0, Zbottom) -
+                                                          Point3d.Origin));
+
+                Matrix3d curUCSMatrix = doc.Editor.CurrentUserCoordinateSystem;
+                CoordinateSystem3d curUCS = curUCSMatrix.CoordinateSystem3d;
+
+                // Rotate the 3D solid around the axis that is defined by the points
+                Vector3d vRot = new Point3d(X1, Y1, Z1).
+                                            GetVectorTo(new Point3d(X0, Y0, Z0));
+
+                br.TransformBy(Matrix3d.Rotation(SlopeRad, vRot, new Point3d(X0, Y0, Z0)));              
+
+                // Save the new objects to the database
+                acTrans.Commit();
+            }
+        }
+
+        public void ParseBlocks(Document doc)
+        {
+            // Get the current document and database, and start a transaction
+            Database acCurDb = doc.Database;
+            Editor editor = doc.Editor;
+
+            using (var ts = acCurDb.TransactionManager.StartTransaction())
+            {
+                var modelSpace = (BlockTableRecord)ts.GetObject(
+                    SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForWrite);
+                var brClass = RXObject.GetClass(typeof(BlockReference));
+                foreach (ObjectId id in modelSpace)
+                {
+                    if (id.ObjectClass == brClass)
+                    {
+                        var br = (BlockReference)ts.GetObject(id, OpenMode.ForWrite);
+                        // do what you need with the block reference here.
+                        
+                        if (br.Name == "NewBlock")
+                        {
+                            //Rotate_3DBox(doc);
+                            DisplaceBlock(doc, acCurDb, br);
+                        }
+                    }
+                }
+                ts.Commit();
+            }
+
         }
     }
 }
