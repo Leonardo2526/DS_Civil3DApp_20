@@ -12,8 +12,6 @@ using System.Windows.Forms;
 
 namespace SolidsOnSurface
 {
-
-
     class Main
     {
         private static Transaction ts;
@@ -25,11 +23,11 @@ namespace SolidsOnSurface
         public float X0 { get; set; } = 0;
         public float Y0 { get; set; } = 0;
         public float Z0 { get; set; } = 0;
+        public float ZOnSurface { get; set; } = 0;
         public float X1 { get; set; } = 0;
         public float Y1 { get; set; } = 0;
         public float Z1 { get; set; } = 0;
         public float Slope { get; set; } = 0;
-
 
         Document doc;
         CivilDocument CivilDoc;
@@ -60,7 +58,7 @@ namespace SolidsOnSurface
                         if (id.ObjectClass == brClass)
                         {
                             var br = (BlockReference)ts.GetObject(id, OpenMode.ForWrite);
-                         
+
                             if (br.Name == blockName)
                             {
                                 X0 = (float)br.Position.X;
@@ -84,15 +82,10 @@ namespace SolidsOnSurface
 
                         }
                     }
-
-
                     MessageBox.Show("Done!");
                     ts.Commit();
                 }
             }
-
-
-
         }
 
         public void DisplaceBlock(BlockReference br)
@@ -109,10 +102,10 @@ namespace SolidsOnSurface
                 acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
                                                 OpenMode.ForWrite) as BlockTableRecord;
 
-                float Zbottom = (float)(Z0 - 2.5);
+                float Zbottom = (float)(ZOnSurface - Z0);
 
                 // Position the center of the block
-                br.TransformBy(Matrix3d.Displacement(new Point3d(0, 0, Z0) -
+                br.TransformBy(Matrix3d.Displacement(new Point3d(0, 0, Zbottom) -
                                                           Point3d.Origin));
 
                 Matrix3d curUCSMatrix = doc.Editor.CurrentUserCoordinateSystem;
@@ -120,15 +113,14 @@ namespace SolidsOnSurface
 
                 // Rotate the block around the axis that is defined by the points
                 Vector3d vRot = new Point3d(X1, Y1, Z1).
-                                            GetVectorTo(new Point3d(X0, Y0, Z0));
+                                            GetVectorTo(new Point3d(X0, Y0, ZOnSurface));
 
-                br.TransformBy(Matrix3d.Rotation(Slope, vRot, new Point3d(X0, Y0, Z0)));
+                br.TransformBy(Matrix3d.Rotation(Slope, vRot, new Point3d(X0, Y0, ZOnSurface)));
 
                 // Save the new objects to the database
                 acTrans.Commit();
             }
         }
-
 
         public void GetSurfaceData(string surfaceName)
         {
@@ -139,14 +131,9 @@ namespace SolidsOnSurface
                 if (oSurface.Name == surfaceName)
                 {
                     //Get surface parameters at the insert point
-                    Z0 = (float)oSurface.FindElevationAtXY(X0, Y0);
+                    ZOnSurface = (float)oSurface.FindElevationAtXY(X0, Y0);
                     float direction = (float)oSurface.FindDirectionAtXY(X0, Y0);
                     float slope = (float)oSurface.FindSlopeAtXY(X0, Y0);
-
-                    editor.WriteMessage("Surface: {0} \n  Type: {1}", oSurface.Name, oSurface.GetType().ToString());
-                    editor.WriteMessage("\nSlope: {0}", slope.ToString());
-                    editor.WriteMessage("\nElevation: {0}", Z0.ToString());
-                    editor.WriteMessage("\nDirection: {0}", direction.ToString());
 
                     //Get point coordinates for the second point of the vector   
                     GetPointCoordinatesByRad(direction);
@@ -181,6 +168,5 @@ namespace SolidsOnSurface
             surfaceName = pStrRes2.StringResult;
 
         }
-
     }
 }
