@@ -46,6 +46,7 @@ namespace SolidsOnSurface
             editor = doc.Editor;
             acCurDb = doc.Database;
 
+            GetBlockName(out string blockName, out string surfaceName);
 
             using (acLckDoc)
             {
@@ -60,18 +61,27 @@ namespace SolidsOnSurface
                         {
                             var br = (BlockReference)ts.GetObject(id, OpenMode.ForWrite);
                          
-                            if (br.Name == "NewBlock")
+                            if (br.Name == blockName)
                             {
                                 X0 = (float)br.Position.X;
                                 Y0 = (float)br.Position.Y;
                                 Z0 = (float)br.Position.Z;
 
                                 //Assign coordinates for rotation
-                                GetSurfaceData();
+                                GetSurfaceData(surfaceName);
 
-                                //Displace and rotate block
-                                DisplaceBlock(br);
+                                if (X1 != 0)
+                                    //Displace and rotate block
+                                    DisplaceBlock(br);
+                                else
+                                    return;
                             }
+                            else
+                            {
+                                MessageBox.Show("No block with such name.");
+                                return;
+                            }
+
                         }
                     }
 
@@ -120,28 +130,36 @@ namespace SolidsOnSurface
         }
 
 
-        public void GetSurfaceData()
+        public void GetSurfaceData(string surfaceName)
         {
             ObjectIdCollection SurfaceIds = CivilDoc.GetSurfaceIds();
             foreach (ObjectId surfaceId in SurfaceIds)
             {
                 TinSurface oSurface = surfaceId.GetObject(OpenMode.ForRead) as TinSurface;
+                if (oSurface.Name == surfaceName)
+                {
+                    //Get surface parameters at the insert point
+                    Z0 = (float)oSurface.FindElevationAtXY(X0, Y0);
+                    float direction = (float)oSurface.FindDirectionAtXY(X0, Y0);
+                    float slope = (float)oSurface.FindSlopeAtXY(X0, Y0);
 
-                //Get surface parameters at the insert point
-                Z0 = (float)oSurface.FindElevationAtXY(X0, Y0);
-                float direction = (float)oSurface.FindDirectionAtXY(X0, Y0);
-                float slope = (float)oSurface.FindSlopeAtXY(X0, Y0);
+                    editor.WriteMessage("Surface: {0} \n  Type: {1}", oSurface.Name, oSurface.GetType().ToString());
+                    editor.WriteMessage("\nSlope: {0}", slope.ToString());
+                    editor.WriteMessage("\nElevation: {0}", Z0.ToString());
+                    editor.WriteMessage("\nDirection: {0}", direction.ToString());
 
-                editor.WriteMessage("Surface: {0} \n  Type: {1}", oSurface.Name, oSurface.GetType().ToString());
-                editor.WriteMessage("\nSlope: {0}", slope.ToString());
-                editor.WriteMessage("\nElevation: {0}", Z0.ToString());
-                editor.WriteMessage("\nDirection: {0}", direction.ToString());
+                    //Get point coordinates for the second point of the vector   
+                    GetPointCoordinatesByRad(direction);
+                    Z1 = (float)oSurface.FindElevationAtXY(X1, Y1);
 
-                //Get point coordinates for the second point of the vector   
-                GetPointCoordinatesByRad(direction);
-                Z1 = (float)oSurface.FindElevationAtXY(X1, Y1);
+                    Slope = (float)Math.Atan(slope);
+                }
+                else
+                {
+                    MessageBox.Show("No surface with such name.");
+                    return;
+                }
 
-                Slope = (float)Math.Atan(slope);
             }
         }
 
@@ -150,6 +168,18 @@ namespace SolidsOnSurface
             // Convert from degrees to radians via multiplication by PI/180        
             X1 = (float)((1 * Math.Cos(direction - (Math.PI) / 2)) + X0);
             Y1 = (float)((1 * Math.Sin(direction - (Math.PI) / 2)) + Y0);
+        }
+
+        public void GetBlockName(out string blockName, out string surfaceName)
+        {
+            PromptStringOptions pStrOpts1 = new PromptStringOptions("Enter block name: ");
+            PromptResult pStrRes1 = editor.GetString(pStrOpts1);
+            blockName = pStrRes1.StringResult;
+
+            PromptStringOptions pStrOpts2 = new PromptStringOptions("Enter surface name: ");
+            PromptResult pStrRes2 = editor.GetString(pStrOpts2);
+            surfaceName = pStrRes2.StringResult;
+
         }
 
     }

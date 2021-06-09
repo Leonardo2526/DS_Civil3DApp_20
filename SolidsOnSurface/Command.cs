@@ -28,11 +28,6 @@ namespace SolidsOnSurface
         {
             Main main = new Main();
             main.ParseBlocks();
-
-            /*
-            Main main = new Main();
-            main.GetSurfaceData();
-            */
         }
 
         [CommandMethod("ShowForm")]
