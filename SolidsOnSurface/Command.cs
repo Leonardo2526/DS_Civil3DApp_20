@@ -1,14 +1,14 @@
 ﻿using Autodesk.AutoCAD.Runtime;
 using System.Windows.Forms;
 
-namespace SolidsOnSurface
+namespace BlocksOnSurface
 {
     public class Commands : IExtensionApplication
     {
         // функция инициализации (выполняется при загрузке плагина)
         public void Initialize()
         {
-            MessageBox.Show("SolidsOnSurface launched!");
+            //MessageBox.Show("SolidsOnSurface launched!");
         }
 
         // функция, выполняемая при выгрузке плагина
@@ -18,18 +18,15 @@ namespace SolidsOnSurface
         }
 
         // эта функция будет вызываться при выполнении в AutoCAD команды «TestCommand»
-        [CommandMethod("DS_SolidsOnSurface")]
+        [CommandMethod("DS_BlocksOnSurface")]
         public void MyCommand()
         {
             Main main = new Main();
+            main.SearchItems();
             main.ParseBlocks();
+
+            MessageBox.Show("Process complete successfully!");
         }
 
-        [CommandMethod("ShowForm")]
-        public void ShowFormCommand()
-        {
-            UserControl1 userControl1 = new UserControl1();
-            userControl1.Show();
-        }
     }
 }

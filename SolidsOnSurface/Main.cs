@@ -8,9 +8,11 @@ using Autodesk.Civil.DatabaseServices;
 //using DS_SystemTools;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
-namespace SolidsOnSurface
+namespace BlocksOnSurface
 {
     class Main
     {
@@ -29,23 +31,76 @@ namespace SolidsOnSurface
         public float Z1 { get; set; } = 0;
         public float Slope { get; set; } = 0;
 
-        Document doc;
-        CivilDocument CivilDoc;
-        Editor editor;
-        Database acCurDb;
+        static readonly Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+        readonly CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
+        readonly Editor editor;
+        static readonly Database acCurDb = doc.Database;
+        readonly DocumentLock acLckDoc = doc.LockDocument();
+
+
+        readonly List<string> SelectedBlocks = new List<string>();
+        readonly List<string> SelectedSurfaces = new List<string>();
+
+        public List<string> SearchBlocks()
+        {
+            List<string> BlockNames = new List<string>();          
+              
+                    var modelSpace = (BlockTableRecord)ts.GetObject(
+                   SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForRead);
+                    var brClass = RXObject.GetClass(typeof(BlockReference));
+                    foreach (ObjectId id in modelSpace)
+                    {
+                        if (id.ObjectClass == brClass)
+                        {
+                            var br = (BlockReference)ts.GetObject(id, OpenMode.ForRead);
+                            if (!BlockNames.Contains(br.Name))
+                            BlockNames.Add(br.Name);
+                        }
+                    } 
+
+            return BlockNames;
+        }
+
+        public List<string> SearchSurfaces()
+        {
+            List<string> SurfaceNames = new List<string>();
+
+                ObjectIdCollection SurfaceIds = CivilDoc.GetSurfaceIds();
+                foreach (ObjectId surfaceId in SurfaceIds)
+                {
+                    TinSurface oSurface = surfaceId.GetObject(OpenMode.ForRead) as TinSurface;
+                    if (!SurfaceNames.Contains(oSurface.Name))
+                        SurfaceNames.Add(oSurface.Name);
+                }
+
+            return SurfaceNames;
+        }
+
+        public void SearchItems()
+        {
+            using (acLckDoc)
+            {
+                using (ts = doc.Database.TransactionManager.StartTransaction())
+                {
+                    //Search blocks
+                    BlockSelection blockSelection = new BlockSelection(SearchBlocks());
+                    blockSelection.ShowDialog();
+                    
+                    SelectedBlocks.AddRange(blockSelection.SelItems);
+
+                    //Search surfaces
+                    blockSelection = new BlockSelection(SearchSurfaces());
+                    blockSelection.ShowDialog();
+                    
+                    SelectedSurfaces.AddRange(blockSelection.SelItems);
+
+                    ts.Commit();
+                }
+            }
+        }
 
         public void ParseBlocks()
         {
-
-            ArrayList styleList = new ArrayList();
-            doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            DocumentLock acLckDoc = doc.LockDocument();
-            CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
-            editor = doc.Editor;
-            acCurDb = doc.Database;
-
-            GetBlockName(out string blockName, out string surfaceName);
-
             using (acLckDoc)
             {
                 using (ts = doc.Database.TransactionManager.StartTransaction())
@@ -59,13 +114,14 @@ namespace SolidsOnSurface
                         {
                             var br = (BlockReference)ts.GetObject(id, OpenMode.ForWrite);
 
-                            if (br.Name == blockName)
+                            if (SelectedBlocks.Contains(br.Name))
                             {
                                 X0 = (float)br.Position.X;
                                 Y0 = (float)br.Position.Y;
                                 Z0 = (float)br.Position.Z;
 
                                 //Assign coordinates for rotation
+                                foreach (string surfaceName in SelectedSurfaces)
                                 GetSurfaceData(surfaceName);
 
                                 if (X1 != 0)
@@ -73,16 +129,10 @@ namespace SolidsOnSurface
                                     DisplaceBlock(br);
                                 else
                                     return;
-                            }
-                            else
-                            {
-                                MessageBox.Show("No block with such name.");
-                                return;
-                            }
-
+                            }   
                         }
                     }
-                    MessageBox.Show("Done!");
+                   
                     ts.Commit();
                 }
             }
@@ -141,12 +191,6 @@ namespace SolidsOnSurface
 
                     Slope = (float)Math.Atan(slope);
                 }
-                else
-                {
-                    MessageBox.Show("No surface with such name.");
-                    return;
-                }
-
             }
         }
 
@@ -157,16 +201,5 @@ namespace SolidsOnSurface
             Y1 = (float)((1 * Math.Sin(direction - (Math.PI) / 2)) + Y0);
         }
 
-        public void GetBlockName(out string blockName, out string surfaceName)
-        {
-            PromptStringOptions pStrOpts1 = new PromptStringOptions("Enter block name: ");
-            PromptResult pStrRes1 = editor.GetString(pStrOpts1);
-            blockName = pStrRes1.StringResult;
-
-            PromptStringOptions pStrOpts2 = new PromptStringOptions("Enter surface name: ");
-            PromptResult pStrRes2 = editor.GetString(pStrOpts2);
-            surfaceName = pStrRes2.StringResult;
-
-        }
     }
 }

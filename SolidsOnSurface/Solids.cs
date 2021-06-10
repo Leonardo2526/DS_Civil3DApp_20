@@ -18,7 +18,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using DBObject = Autodesk.AutoCAD.DatabaseServices.DBObject;
 
-namespace SolidsOnSurface
+namespace BlocksOnSurface
 {
     class Solids
     {
