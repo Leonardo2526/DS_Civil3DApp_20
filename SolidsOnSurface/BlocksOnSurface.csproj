@@ -76,7 +76,6 @@
     </Compile>
     <Compile Include="Main.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="Solids.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

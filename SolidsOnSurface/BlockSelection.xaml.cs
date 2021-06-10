@@ -8,12 +8,12 @@ namespace BlocksOnSurface
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class BlockSelection : Window
+    public partial class ItemsSelection : Window
     {
         List<string> BlockNames = new List<string>();
         public List<string> SelItems = new List<string>();
 
-        public BlockSelection(List<string> list)
+        public ItemsSelection(List<string> list)
         {
             InitializeComponent();
             BlockNames = list;

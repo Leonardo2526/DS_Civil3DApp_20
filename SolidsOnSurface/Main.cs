@@ -1,26 +1,17 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices;
-//using DS_SystemTools;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace BlocksOnSurface
 {
     class Main
     {
         private static Transaction ts;
-
-        //Get current date and time      
-        readonly string CurDate = DateTime.Now.ToString("yyMMdd");
-        readonly string CurDateTime = DateTime.Now.ToString("yyMMdd_HHmmss");
 
         public float X0 { get; set; } = 0;
         public float Y0 { get; set; } = 0;
@@ -31,11 +22,10 @@ namespace BlocksOnSurface
         public float Z1 { get; set; } = 0;
         public float Slope { get; set; } = 0;
 
-        static readonly Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-        readonly CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
-        readonly Editor editor;
-        static readonly Database acCurDb = doc.Database;
-        readonly DocumentLock acLckDoc = doc.LockDocument();
+        Document doc;
+        CivilDocument CivilDoc;
+        Database acCurDb;
+        DocumentLock acLckDoc;
 
 
         readonly List<string> SelectedBlocks = new List<string>();
@@ -43,20 +33,20 @@ namespace BlocksOnSurface
 
         public List<string> SearchBlocks()
         {
-            List<string> BlockNames = new List<string>();          
-              
-                    var modelSpace = (BlockTableRecord)ts.GetObject(
-                   SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForRead);
-                    var brClass = RXObject.GetClass(typeof(BlockReference));
-                    foreach (ObjectId id in modelSpace)
-                    {
-                        if (id.ObjectClass == brClass)
-                        {
-                            var br = (BlockReference)ts.GetObject(id, OpenMode.ForRead);
-                            if (!BlockNames.Contains(br.Name))
-                            BlockNames.Add(br.Name);
-                        }
-                    } 
+            List<string> BlockNames = new List<string>();
+
+            var modelSpace = (BlockTableRecord)ts.GetObject(
+           SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForRead);
+            var brClass = RXObject.GetClass(typeof(BlockReference));
+            foreach (ObjectId id in modelSpace)
+            {
+                if (id.ObjectClass == brClass)
+                {
+                    var br = (BlockReference)ts.GetObject(id, OpenMode.ForRead);
+                    if (!BlockNames.Contains(br.Name))
+                        BlockNames.Add(br.Name);
+                }
+            }
 
             return BlockNames;
         }
@@ -65,34 +55,41 @@ namespace BlocksOnSurface
         {
             List<string> SurfaceNames = new List<string>();
 
-                ObjectIdCollection SurfaceIds = CivilDoc.GetSurfaceIds();
-                foreach (ObjectId surfaceId in SurfaceIds)
-                {
-                    TinSurface oSurface = surfaceId.GetObject(OpenMode.ForRead) as TinSurface;
-                    if (!SurfaceNames.Contains(oSurface.Name))
-                        SurfaceNames.Add(oSurface.Name);
-                }
+            ObjectIdCollection SurfaceIds = CivilDoc.GetSurfaceIds();
+            foreach (ObjectId surfaceId in SurfaceIds)
+            {
+                TinSurface oSurface = surfaceId.GetObject(OpenMode.ForRead) as TinSurface;
+                if (!SurfaceNames.Contains(oSurface.Name))
+                    SurfaceNames.Add(oSurface.Name);
+            }
 
             return SurfaceNames;
         }
 
         public void SearchItems()
         {
+            doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
+            acCurDb = doc.Database;
+            acLckDoc = doc.LockDocument();
+
             using (acLckDoc)
             {
                 using (ts = doc.Database.TransactionManager.StartTransaction())
                 {
                     //Search blocks
-                    BlockSelection blockSelection = new BlockSelection(SearchBlocks());
-                    blockSelection.ShowDialog();
-                    
-                    SelectedBlocks.AddRange(blockSelection.SelItems);
+                    ItemsSelection itemsSelection = new ItemsSelection(SearchBlocks());
+                    itemsSelection.Title.Content = "Blocks have been found";
+                    itemsSelection.ShowDialog();
+
+                    SelectedBlocks.AddRange(itemsSelection.SelItems);
 
                     //Search surfaces
-                    blockSelection = new BlockSelection(SearchSurfaces());
-                    blockSelection.ShowDialog();
-                    
-                    SelectedSurfaces.AddRange(blockSelection.SelItems);
+                    itemsSelection = new ItemsSelection(SearchSurfaces());
+                    itemsSelection.Title.Content = "Surfaces have been found";
+                    itemsSelection.ShowDialog();
+
+                    SelectedSurfaces.AddRange(itemsSelection.SelItems);
 
                     ts.Commit();
                 }
@@ -122,17 +119,17 @@ namespace BlocksOnSurface
 
                                 //Assign coordinates for rotation
                                 foreach (string surfaceName in SelectedSurfaces)
-                                GetSurfaceData(surfaceName);
+                                    GetSurfaceData(surfaceName);
 
                                 if (X1 != 0)
                                     //Displace and rotate block
                                     DisplaceBlock(br);
                                 else
                                     return;
-                            }   
+                            }
                         }
                     }
-                   
+
                     ts.Commit();
                 }
             }

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StylesRename", "StylesRename\StylesRename.csproj", "{8CF256E9-E841-4C01-BDF4-5DF40FEDD052}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolidsOnSurface", "SolidsOnSurface\SolidsOnSurface.csproj", "{39000388-0C29-4919-A0B1-E2874972234B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlocksOnSurface", "SolidsOnSurface\BlocksOnSurface.csproj", "{39000388-0C29-4919-A0B1-E2874972234B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
