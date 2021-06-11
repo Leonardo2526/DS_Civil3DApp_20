@@ -194,8 +194,8 @@ namespace BlocksOnSurface
         public void GetPointCoordinatesByRad(float direction)
         {
             // Convert from degrees to radians via multiplication by PI/180        
-            X1 = (float)((1 * Math.Cos(direction - (Math.PI) / 2)) + X0);
-            Y1 = (float)((1 * Math.Sin(direction - (Math.PI) / 2)) + Y0);
+            X1 = (float)((0.01 * Math.Cos(direction - (Math.PI) / 2)) + X0);
+            Y1 = (float)((0.01 * Math.Sin(direction - (Math.PI) / 2)) + Y0);
         }
 
     }
