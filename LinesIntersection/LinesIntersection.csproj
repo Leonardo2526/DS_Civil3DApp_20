@@ -55,6 +55,9 @@
       <HintPath>C:\Program Files\Autodesk\AutoCAD 2021\C3D\AeccDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DS_MainTools_Net_FW_4.7.2">
+      <HintPath>..\..\DS_ConsoleApp\FileSystemTools_FW4.7.2\bin\Debug\DS_MainTools_Net_FW_4.7.2.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
