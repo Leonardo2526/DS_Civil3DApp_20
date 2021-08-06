@@ -15,9 +15,9 @@ using DS_SystemTools;
 namespace LinesIntersection
 {
     class Main
-    {      
-
-        public static List<LineCoordinates> Line_XY = new List<LineCoordinates>();
+    {
+        List<int> X_Coords = new List<int>();
+        List<int> Y_Coords = new List<int>();
 
         //Get current date and time    
         readonly string CurDateTime = DateTime.Now.ToString("yyMMdd_HHmmss");
@@ -69,7 +69,10 @@ namespace LinesIntersection
                     Point3d Point2 = new Point3d(x2, y2, 0);
 
                     //add X and Y coordinates to lists
-                    Line_XY.Add(new LineCoordinates() {X1 = x1, Y1 = y1, X2 = x2, Y2 = y2 });
+                    X_Coords.Add(x1);
+                    X_Coords.Add(x2);
+                    Y_Coords.Add(y1);
+                    Y_Coords.Add(y2);
 
                     // Create a line that starts at Point1 and ends at Point2
                     Line acLine = new Line(Point1, Point2);
@@ -98,13 +101,13 @@ namespace LinesIntersection
 
             int i;
             int number = 0;
-            for (i = 0; i < Line_XY.Count; i++)
+            for (i = 0; i < X_Coords.Count - 1; i+=2)
             {
                 number++;
                 
-                dS_Tools.DS_StreamWriter("Line " + number.ToString() + ": " +
-                    Line_XY[i].X1.ToString() + ","+ Line_XY[i].Y1.ToString() + "; " +
-                    Line_XY[i].X2.ToString() + "," + Line_XY[i].Y2.ToString());
+                dS_Tools.DS_StreamWriter("Line " + number.ToString() + ": " + 
+                    X_Coords[i].ToString() + ","+ Y_Coords[i].ToString() + "; " + 
+                    X_Coords[i + 1].ToString() + "," + Y_Coords[i +1].ToString());
                 
 
         }
@@ -118,12 +121,12 @@ namespace LinesIntersection
 
             int i;
             int number = 0;
-            for (i = 0; i < Line_XY.Count - 1; i += 2)
+            for (i = 0; i < X_Coords.Count - 1; i += 2)
             {
                 number++;
             }
 
-                
+                intersection
         }
     }
 }
