@@ -13,16 +13,17 @@ namespace LinesIntersection
             new LineCoordinates() {}
         };
 
-        public void Calculte()
+        public void Calculte(ref bool IntersectionExist, out double Xa, out double Ya)
         {
+            Xa = 0;
+            Ya = 0;
+
             if (IfIntersectionAvailable() == false)
             {
                 //MessageBox.Show("There are No avilable intersecions.");
                 return;
             }
 
-            double Xa = 0;
-            double Ya = 0;
 
             //Check if lines are vertical
             if (InputXY[0].X1 == InputXY[0].X2 || InputXY[1].X1 == InputXY[1].X2)
@@ -51,10 +52,11 @@ namespace LinesIntersection
             if (CheckIntersection(Xa, Ya) == false)
             {
                 return;
-            }          
+            }
 
+            IntersectionExist = true;
 
-                Point3d InterPoint = new Point3d(Xa, Ya, 0);
+            Point3d InterPoint = new Point3d(Xa, Ya, 0);
             Main.IntersectionsList.Add(InterPoint);           
         }
 
