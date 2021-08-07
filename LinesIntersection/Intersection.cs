@@ -13,10 +13,13 @@ namespace LinesIntersection
             new LineCoordinates() {}
         };
 
-        public void Calculte(ref bool IntersectionExist, out double Xa, out double Ya)
+        public void Calculte(ref bool IntersectionExist, out double Xa, out double Ya, 
+            out double A1, out double A2)
         {
             Xa = 0;
             Ya = 0;
+            A1 = 0;
+            A2 = 0;
 
             if (IfIntersectionAvailable() == false)
             {
@@ -31,8 +34,8 @@ namespace LinesIntersection
             else
             {
                 //Get coefficients values of line equation 
-                double A1 = (InputXY[0].Y1 - InputXY[0].Y2) / (InputXY[0].X1 - InputXY[0].X2);
-                double A2 = (InputXY[1].Y1 - InputXY[1].Y2) / (InputXY[1].X1 - InputXY[1].X2);
+                A1 = (InputXY[0].Y1 - InputXY[0].Y2) / (InputXY[0].X1 - InputXY[0].X2);
+                A2 = (InputXY[1].Y1 - InputXY[1].Y2) / (InputXY[1].X1 - InputXY[1].X2);
                 double b1 = InputXY[0].Y1 - (A1 * InputXY[0].X1);
                 double b2 = InputXY[1].Y1 - (A2 * InputXY[1].X1);
 

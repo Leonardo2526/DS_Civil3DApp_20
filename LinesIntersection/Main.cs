@@ -134,51 +134,73 @@ namespace LinesIntersection
 
         void SearchIntersections(BlockTableRecord acBlkTblRec, Transaction acTrans)
         {
-            Intersection intersection = new Intersection();
 
 
             int i;
             int j;
+            //iterate through line's coordinates
             for (i = 0; i < Line_XY.Count; i++)
             {
+                //assign values for intersecion calculate
                 Intersection.InputXY[0].X1 = Line_XY[i].X1;
                 Intersection.InputXY[0].Y1 = Line_XY[i].Y1;
                 Intersection.InputXY[0].X2 = Line_XY[i].X2;
                 Intersection.InputXY[0].Y2 = Line_XY[i].Y2;
 
+                //create list for intermediate points of line
                 List<Point3d> LinePoints = new List<Point3d>();
+
+                //iterate through other line's coordinates
                 for (j = i + 1; j < Line_XY.Count; j++)
                 {
+                    //assign values for intersecion calculate
                     Intersection.InputXY[1].X1 = Line_XY[j].X1;
                     Intersection.InputXY[1].Y1 = Line_XY[j].Y1;
                     Intersection.InputXY[1].X2 = Line_XY[j].X2;
                     Intersection.InputXY[1].Y2 = Line_XY[j].Y2;
 
+                    //calculate intersection points
+                    Intersection intersection = new Intersection();
                     bool IntersectionExist = false;
-                    intersection.Calculte(ref IntersectionExist, out double Xa, out double Ya);
+                    intersection.Calculte(ref IntersectionExist, out double Xa, out double Ya, 
+                        out double A1, out double A2);
 
+                    //add intermediate point if intersection exist
                     if (IntersectionExist == true)
                     {
-                        Point3d InterPoint = new Point3d(Xa, Ya, 0);
-                        LinePoints.Add(InterPoint);
+                        //Get coordinates for line's gap
+                        GetPointsForGap(A1, out double Xar, out double Yar);
+
+                        Point3d GapPoint1 = new Point3d(Xa + Xar, Ya + Yar, 0);
+                        Point3d GapPoint2 = new Point3d(Xa - Xar, Ya - Yar, 0);
+                        LinePoints.Add(GapPoint1);
+                        LinePoints.Add(GapPoint2);
                     }
                 }
+                //Assign start and end points of line
                 Point3d point1 = new Point3d(Line_XY[i].X1, Line_XY[i].Y1, 0);
                 Point3d point2 = new Point3d(Line_XY[i].X2, Line_XY[i].Y2, 0);
 
+                //create line without intersection
                 if (LinePoints.Count == 0)
                     CreateLine(acBlkTblRec, acTrans, point1, point2, Color.FromRgb(255, 255, 255));
                 
+                //create intersected line
                 else
                 {
+                    //Add start and end points of line
                     LinePoints.Add(point1);
-                    LinePoints.Add(point2);
+                    LinePoints.Add(point2); 
+
+                    //order list
                     LinePoints = LinePoints.OrderBy(o => o.X).ToList<Point3d>();
                     
-
+                    //create lines for all points of intersected line
                     for (int k = 0; k < LinePoints.Count - 1 ; k++)
                     {
-                        CreateLine(acBlkTblRec, acTrans, LinePoints[k], LinePoints[k + 1], Color.FromRgb(250, 0, 0));
+                        
+                        if (Math.Abs(LinePoints[k].X - LinePoints[k + 1].X) > 2 | Math.Abs(LinePoints[k].Y - LinePoints[k + 1].Y) > 2)                         
+                            CreateLine(acBlkTblRec, acTrans, LinePoints[k], LinePoints[k + 1], Color.FromRgb(250, 0, 0));
 
                     }
                 }
@@ -199,9 +221,9 @@ namespace LinesIntersection
                 {
                     Circle acCirc = new Circle();
                     acCirc.SetDatabaseDefaults();
-                    acCirc.Radius = 2;
+                    acCirc.Radius = 1;
                     acCirc.Center = interPoint;
-                    acCirc.Color = Color.FromRgb(250, 0, 0);
+                    acCirc.Color = Color.FromRgb(0, 255, 0);
 
                     // Add the new object to the block table record and the transaction
                     acBlkTblRec.AppendEntity(acCirc);
@@ -213,6 +235,13 @@ namespace LinesIntersection
                 MessageBox.Show(ex.ToString());
             }
 
+        }
+
+        void GetPointsForGap(double A, out double Xar, out double Yar)
+        {
+            double r = 1;
+            Xar = r * Math.Cos(Math.Atan(A));
+            Yar = r * Math.Sin(Math.Atan(A));
         }
     }
 }
