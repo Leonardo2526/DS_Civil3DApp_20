@@ -17,6 +17,8 @@ namespace LinesIntersection
 
         public static List<LineCoordinates> Line_XY;
         public static List<Point3d> IntersectionsList;
+        public static List<LineCoordinates> FinalLines_XY;
+
 
         //Get current date and time    
         readonly string CurDateTime = DateTime.Now.ToString("yyMMdd_HHmmss");
@@ -33,6 +35,7 @@ namespace LinesIntersection
 
             Line_XY = new List<LineCoordinates>();
             IntersectionsList = new List<Point3d>();
+            FinalLines_XY = new List<LineCoordinates>();
 
             // Start a transaction
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
@@ -129,6 +132,20 @@ namespace LinesIntersection
                 dS_Tools.DS_StreamWriter($"#{i}: {Output}");
             }
 
+            //Final lines coordinates output 
+            dS_Tools.DS_StreamWriter("\nChanged lines coordinates start and end: \n");           
+            for (i = 0; i < FinalLines_XY.Count; i++)
+            {
+                //Transform float to string with double precision
+                string X1 = String.Format("{0:0.00}", FinalLines_XY[i].X1);
+                string X2 = String.Format("{0:0.00}", FinalLines_XY[i].Y1);
+                string Y1 = String.Format("{0:0.00}", FinalLines_XY[i].X2);
+                string Y2 = String.Format("{0:0.00}", FinalLines_XY[i].Y2);
+                string Output = $"#{i + 1}: ({X1}; {Y1}), ({X2}; {Y2})";
+
+                dS_Tools.DS_StreamWriter(Output);
+            }
+            
             dS_Tools.DS_FileExistMessage();
         }
 
@@ -151,8 +168,12 @@ namespace LinesIntersection
                 List<Point3d> LinePoints = new List<Point3d>();
 
                 //iterate through other line's coordinates
-                for (j = i + 1; j < Line_XY.Count; j++)
+                for (j = 0; j < Line_XY.Count; j++)
                 {
+                    //Miss curent line
+                    if (j == i)
+                        continue;
+
                     //assign values for intersecion calculate
                     Intersection.InputXY[1].X1 = Line_XY[j].X1;
                     Intersection.InputXY[1].Y1 = Line_XY[j].Y1;
@@ -168,13 +189,18 @@ namespace LinesIntersection
                     //add intermediate point if intersection exist
                     if (IntersectionExist == true)
                     {
-                        //Get coordinates for line's gap
-                        GetPointsForGap(A1, out double Xar, out double Yar);
+                        //Check angle
+                        if (Math.Abs(A1) > Math.Abs(A2))
+                        {
+                            //Get coordinates for line's gap
+                            GetPointsForGap(A1, out double Xar, out double Yar);
 
-                        Point3d GapPoint1 = new Point3d(Xa + Xar, Ya + Yar, 0);
-                        Point3d GapPoint2 = new Point3d(Xa - Xar, Ya - Yar, 0);
-                        LinePoints.Add(GapPoint1);
-                        LinePoints.Add(GapPoint2);
+                            Point3d GapPoint1 = new Point3d(Xa + Xar, Ya + Yar, 0);
+                            Point3d GapPoint2 = new Point3d(Xa - Xar, Ya - Yar, 0);
+                            LinePoints.Add(GapPoint1);
+                            LinePoints.Add(GapPoint2);
+                        }
+                       
                     }
                 }
                 //Assign start and end points of line
@@ -194,11 +220,14 @@ namespace LinesIntersection
 
                     //order list
                     LinePoints = LinePoints.OrderBy(o => o.X).ToList<Point3d>();
-                    
+
+                  
                     //create lines for all points of intersected line
                     for (int k = 0; k < LinePoints.Count - 1 ; k++)
                     {
-                        
+                        FinalLines_XY.Add(new LineCoordinates() 
+                        { X1 = LinePoints[k].X, Y1 = LinePoints[k].Y, X2 = LinePoints[k + 1].X, Y2 = LinePoints[k + 1].Y });
+
                         if (Math.Abs(LinePoints[k].X - LinePoints[k + 1].X) > 2 | Math.Abs(LinePoints[k].Y - LinePoints[k + 1].Y) > 2)                         
                             CreateLine(acBlkTblRec, acTrans, LinePoints[k], LinePoints[k + 1], Color.FromRgb(250, 0, 0));
 
