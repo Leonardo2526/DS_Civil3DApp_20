@@ -1,7 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace LinesIntersection
 {
@@ -13,7 +12,7 @@ namespace LinesIntersection
             new LineCoordinates() {}
         };
 
-        public void Calculte(ref bool IntersectionExist, out double Xa, out double Ya, 
+        public void Calculte(ref bool IntersectionExist, out double Xa, out double Ya,
             out double A1, out double A2)
         {
             Xa = 0;
@@ -22,10 +21,7 @@ namespace LinesIntersection
             A2 = 0;
 
             if (IfIntersectionAvailable() == false)
-            {
-                //MessageBox.Show("There are No avilable intersecions.");
                 return;
-            }
 
 
             //Check if lines are vertical
@@ -41,10 +37,7 @@ namespace LinesIntersection
 
                 //Parallel segments
                 if (A1 == A2)
-                {
-                    //MessageBox.Show("Lines are parallel.");
                     return;
-                }
 
                 //Get intersection coordinates
                 Xa = (b2 - b1) / (A1 - A2);
@@ -60,7 +53,7 @@ namespace LinesIntersection
             IntersectionExist = true;
 
             Point3d InterPoint = new Point3d(Xa, Ya, 0);
-            Main.IntersectionsList.Add(InterPoint);           
+            Main.IntersectionsList.Add(InterPoint);
         }
 
         static bool CheckIntersection(double Xa, double Ya)
