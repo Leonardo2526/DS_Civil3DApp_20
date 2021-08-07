@@ -147,7 +147,6 @@ namespace LinesIntersection
                 Intersection.InputXY[0].Y2 = Line_XY[i].Y2;
 
                 List<Point3d> LinePoints = new List<Point3d>();
-                bool IntersectionExist = false;
                 for (j = i + 1; j < Line_XY.Count; j++)
                 {
                     Intersection.InputXY[1].X1 = Line_XY[j].X1;
@@ -155,6 +154,7 @@ namespace LinesIntersection
                     Intersection.InputXY[1].X2 = Line_XY[j].X2;
                     Intersection.InputXY[1].Y2 = Line_XY[j].Y2;
 
+                    bool IntersectionExist = false;
                     intersection.Calculte(ref IntersectionExist, out double Xa, out double Ya);
 
                     if (IntersectionExist == true)
@@ -163,28 +163,26 @@ namespace LinesIntersection
                         LinePoints.Add(InterPoint);
                     }
                 }
+                Point3d point1 = new Point3d(Line_XY[i].X1, Line_XY[i].Y1, 0);
+                Point3d point2 = new Point3d(Line_XY[i].X2, Line_XY[i].Y2, 0);
+
                 if (LinePoints.Count == 0)
-                {
-                    Point3d point1 = new Point3d(Line_XY[i].X1, Line_XY[i].Y1, 0);
-                    Point3d point2 = new Point3d(Line_XY[i].X2, Line_XY[i].Y2, 0);
                     CreateLine(acBlkTblRec, acTrans, point1, point2, Color.FromRgb(255, 255, 255));
-                }
-                /*
+                
                 else
                 {
-                    Point3d point1 = new Point3d(Line_XY[i].X1, Line_XY[i].Y1, 0);  
-                    Point3d point2 = new Point3d(Line_XY[i].X2, Line_XY[i].Y2, 0);
                     LinePoints.Add(point1);
                     LinePoints.Add(point2);
-                    LinePoints = LinePoints.OrderBy(o => o.X).ToList();
+                    LinePoints = LinePoints.OrderBy(o => o.X).ToList<Point3d>();
+                    
 
-                    for (i = 0; i < LinePoints.Count - 1 ; i++)
+                    for (int k = 0; k < LinePoints.Count - 1 ; k++)
                     {
-                        CreateLine(acBlkTblRec, acTrans, LinePoints[i], LinePoints[i + 1], Color.FromRgb(250, 0, 0));
+                        CreateLine(acBlkTblRec, acTrans, LinePoints[k], LinePoints[k + 1], Color.FromRgb(250, 0, 0));
 
                     }
                 }
-                */
+                
 
 
             }
