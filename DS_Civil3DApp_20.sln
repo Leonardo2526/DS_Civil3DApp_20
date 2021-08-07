@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StylesRename", "StylesRenam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlocksOnSurface", "SolidsOnSurface\BlocksOnSurface.csproj", "{39000388-0C29-4919-A0B1-E2874972234B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinesIntersection", "LinesIntersection\LinesIntersection.csproj", "{642E2C17-3310-46ED-8492-DFD20C4E528E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,11 +18,14 @@ Global
 		{8CF256E9-E841-4C01-BDF4-5DF40FEDD052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8CF256E9-E841-4C01-BDF4-5DF40FEDD052}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CF256E9-E841-4C01-BDF4-5DF40FEDD052}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8CF256E9-E841-4C01-BDF4-5DF40FEDD052}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39000388-0C29-4919-A0B1-E2874972234B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39000388-0C29-4919-A0B1-E2874972234B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39000388-0C29-4919-A0B1-E2874972234B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39000388-0C29-4919-A0B1-E2874972234B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

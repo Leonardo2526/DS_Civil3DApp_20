@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{39000388-0C29-4919-A0B1-E2874972234B}</ProjectGuid>
+    <ProjectGuid>{642E2C17-3310-46ED-8492-DFD20C4E528E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlocksOnSurface</RootNamespace>
-    <AssemblyName>DS.BlocksOnSurface</AssemblyName>
+    <RootNamespace>LinesIntersection</RootNamespace>
+    <AssemblyName>LinesIntersection</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,6 +57,9 @@
       <HintPath>C:\Program Files\Autodesk\AutoCAD 2021\C3D\AeccDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DS_MainTools_Net_FW_4.7.2">
+      <HintPath>..\..\DS_ConsoleApp\FileSystemTools_FW4.7.2\bin\Debug\DS_MainTools_Net_FW_4.7.2.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -72,18 +75,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockSelection.xaml.cs">
-      <DependentUpon>BlockSelection.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Commands.cs" />
+    <Compile Include="Intersection.cs" />
+    <Compile Include="LineCoordinates.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Command.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="BlockSelection.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
