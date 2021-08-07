@@ -27,7 +27,7 @@ namespace LinesIntersection
         public void MyCommand()
         {
             Main main = new Main();
-            main.StartTransaction();
+            main.CommitTransaction();
         }
 
         [CommandMethod("ShowForm")]
