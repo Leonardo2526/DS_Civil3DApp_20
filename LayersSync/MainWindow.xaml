@@ -79,9 +79,11 @@
         </StackPanel>
         <StackPanel Grid.Column="2" Margin="10" Width="120">
             <Button x:Name="AddLayers" Style="{StaticResource DS_Button}" Click="AddLayers_Click">Add layer</Button>
-            <Button x:Name="AddAllLayers" Style="{StaticResource DS_Button}" Click="AddAllLayers_Click" 
-                    >
+            <Button x:Name="AddAllLayers" Style="{StaticResource DS_Button}" Click="AddAllLayers_Click">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center">Add all layers</TextBlock>
+            </Button>
+            <Button x:Name="RenameLayers" Style="{StaticResource DS_Button}" Click="RenameLayers_Click" >
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Rename layers</TextBlock>
             </Button>
         </StackPanel>
 

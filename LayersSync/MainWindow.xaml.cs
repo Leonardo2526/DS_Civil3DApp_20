@@ -173,5 +173,11 @@ namespace LayersSync
             Main main = new Main();
             main.CreateAndAssignALayer(FullLayersList);
         }
+
+        private void RenameLayers_Click(object sender, RoutedEventArgs e)
+        {
+            Main main = new Main();
+            main.GetLayersList();
+        }
     }
 }

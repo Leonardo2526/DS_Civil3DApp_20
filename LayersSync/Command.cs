@@ -30,10 +30,5 @@ namespace LayersSync
             mainWindow.Show();
         }
 
-        [CommandMethod("ShowForm")]
-        public void ShowFormCommand()
-        {
-            
-        }
     }
 }

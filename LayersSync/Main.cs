@@ -1,11 +1,5 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
@@ -44,7 +38,7 @@ namespace LayersSync
         }
 
         void AddLayers(LayerTable acLyrTbl, Transaction acTrans, LayersFieldsCollection NewLayersList, ref int i)
-        {          
+        {
             foreach (var newLayer in NewLayersList)
             {
                 if (acLyrTbl.Has(newLayer.Code) == false)
@@ -66,6 +60,40 @@ namespace LayersSync
                     i++;
                 }
             }
+
+        }
+
+
+        public void GetLayersList()
+        {
+            // Get the current document and database
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+            Database acCurDb = acDoc.Database;
+            DocumentLock acLckDoc = acDoc.LockDocument();
+
+            string sLayerNames = "";
+
+            // Start a transaction
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                // Open the Layer table for read
+                LayerTable acLyrTbl;
+                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
+                                             OpenMode.ForRead) as LayerTable;
+                foreach (ObjectId acObjId in acLyrTbl)
+                {
+                    LayerTableRecord acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(acObjId,
+                                                    OpenMode.ForRead) as LayerTableRecord;
+
+                    sLayerNames = sLayerNames + "\n" + acLyrTblRec.Name;
+
+                }
+                // Save the changes and dispose of the transaction
+                acTrans.Commit();
+            }
+
+            MessageBox.Show(sLayerNames);
 
         }
     }
