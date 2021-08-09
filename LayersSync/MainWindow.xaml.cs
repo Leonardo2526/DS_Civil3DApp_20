@@ -17,13 +17,15 @@ namespace LayersSync
         public static string CurrentDBName;
         readonly List<string> DBNamesList = new List<string>();
         public static IMongoDatabase database;
-        public static List<string> collectionsNames = new List<string>();
+        public static List<string> collectionsNames;
         public static string CurrentColName;
         public static IMongoCollection<BsonDocument> CurrentCollection;
 
 
         public MainWindow()
         {
+            //collectionsNames = null;
+
             ConnectionToMongoClient();
 
             if (DBNamesList.Count == 0)
@@ -92,12 +94,15 @@ namespace LayersSync
         public List<string> GetCollectionsNames()
         //Get all collections names
         {
+            collectionsNames = new List<string>();
             using (var collCursor = MainWindow.database.ListCollections())
             {
                 var colls = collCursor.ToList();
                 foreach (var col in colls)
                 {
-                    collectionsNames.Add(col["name"].AsString);
+                    string colName = col["name"].AsString;
+                    if (colName.Contains("Шаблон"))
+                    collectionsNames.Add(colName);
                 }
             }
 
@@ -117,19 +122,20 @@ namespace LayersSync
         }
 
 
-        public LayersFieldsCollection LayersFields { get; } = new LayersFieldsCollection();
+        public LayersFieldsCollection FullLayersList { get; } = new LayersFieldsCollection();
+        public LayersFieldsCollection AddedLayersList { get; } = new LayersFieldsCollection();
 
         public void RefreshDocumentsList()
         //Get all documents names
         {
             CurrentCollection = database.GetCollection<BsonDocument>(CurrentColName);
 
-            LayersFields.Clear();
+            FullLayersList.Clear();
 
             var cursor = CurrentCollection.Find(new BsonDocument()).ToCursor();
             foreach (var document in cursor.ToEnumerable())
             {
-                LayersFields.Add(document[1].ToString(), document[2].ToString());
+                FullLayersList.Add(document[1].ToString(), document[2].ToString());
             }
 
         }
@@ -140,15 +146,32 @@ namespace LayersSync
             RefreshDocumentsList();
         }
 
+        private void AddLayers_Click(object sender, RoutedEventArgs e)
+        {
+            if (DocumentsListBox.SelectedItems != null)
+            {
+                
+                foreach (var item in DocumentsListBox.SelectedItems)
+                {
+                    string itemName = (item as LayerField).Code;
+                    string itemDescription = (item as LayerField).Description;
+                    AddedLayersList.Add(itemName, itemDescription);
+
+                }
+                Main main = new Main();
+                main.CreateAndAssignALayer(AddedLayersList);
+            }
+            else
+            {
+                MessageBox.Show("Chose item at first.");
+            }
+           
+        }
+
         private void AddAllLayers_Click(object sender, RoutedEventArgs e)
         {
             Main main = new Main();
-            main.CreateAndAssignALayer();
-        }
-
-        private void AddLayer_Click(object sender, RoutedEventArgs e)
-        {
-
+            main.CreateAndAssignALayer(FullLayersList);
         }
     }
 }
