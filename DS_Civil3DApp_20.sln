@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlocksOnSurface", "SolidsOn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinesIntersection", "LinesIntersection\LinesIntersection.csproj", "{642E2C17-3310-46ED-8492-DFD20C4E528E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LayersSync", "LayersSync\LayersSync.csproj", "{BF2C74A6-0F67-430C-B383-C5F1C71232C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{642E2C17-3310-46ED-8492-DFD20C4E528E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF2C74A6-0F67-430C-B383-C5F1C71232C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF2C74A6-0F67-430C-B383-C5F1C71232C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF2C74A6-0F67-430C-B383-C5F1C71232C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF2C74A6-0F67-430C-B383-C5F1C71232C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

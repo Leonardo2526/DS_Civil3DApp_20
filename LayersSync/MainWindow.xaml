@@ -1,0 +1,51 @@
+﻿<Window x:Class="LayersSync.MainWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LayersSync"
+             mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+            WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!--Set style for buttons-->
+        <Style x:Key="DS_Button" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Background" Value="LightBlue"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+        <!--Set style for windows-->
+        <Style x:Key="DS_Window" TargetType="Window" >
+            <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+            <Setter Property="ResizeMode" Value="NoResize"/>
+        </Style>
+        <WindowStartupLocation x:Key="WSL">CenterScreen</WindowStartupLocation>
+
+        <!--Set style for borders-->
+        <Style x:Key="DS_Border" TargetType="Border">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!--Set style for TextBox-->
+        <Style x:Key="FieldsTextBox" TargetType="TextBox">
+            <Setter Property="Margin" Value="10,0,10,0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="40"/>
+
+        </Style>
+    </Window.Resources>
+   
+
+    <Grid>
+        <StackPanel Height="400" Width="400"  Margin="10" Orientation="Horizontal">
+            <Button x:Name="CreateLayer" Content="Creare layer" Style="{StaticResource DS_Button}" 
+                    HorizontalAlignment="Left" Click="CreateLayer_Click"/>
+                    
+        </StackPanel>
+
+    </Grid>
+</Window>
