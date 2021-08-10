@@ -5,7 +5,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace LayersSync
 {
-    class Main
+    class DS_Layers
     {
         public void CreateAndAssignALayer(LayersFieldsCollection NewLayersList)
         {
@@ -86,15 +86,21 @@ namespace LayersSync
                     acLyrTblRec = acTrans.GetObject(acObjId,
                                                     OpenMode.ForRead) as LayerTableRecord;
 
-                    sLayerNames = sLayerNames + "\n" + acLyrTblRec.Name;
+                    DS_Mongo dS_Mongo = new DS_Mongo();
+                    //dS_Mongo.SetNewName(acLyrTblRec.Name);
+                    
+                    
+                    MessageBox.Show(dS_Mongo.ListOutput(dS_Mongo.SplitString(acLyrTblRec.Name)));
+                    //sLayerNames = sLayerNames + "\n" + acLyrTblRec.Name;
 
                 }
                 // Save the changes and dispose of the transaction
                 acTrans.Commit();
             }
 
-            MessageBox.Show(sLayerNames);
 
         }
+
+
     }
 }

@@ -141,10 +141,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="DS_Layers.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DS_Mongo.cs" />
     <Compile Include="MyObject.cs" />
     <Compile Include="NamesCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

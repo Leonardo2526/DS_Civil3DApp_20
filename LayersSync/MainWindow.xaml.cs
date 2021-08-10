@@ -158,7 +158,7 @@ namespace LayersSync
                     AddedLayersList.Add(itemName, itemDescription);
 
                 }
-                Main main = new Main();
+                DS_Layers main = new DS_Layers();
                 main.CreateAndAssignALayer(AddedLayersList);
             }
             else
@@ -170,14 +170,15 @@ namespace LayersSync
 
         private void AddAllLayers_Click(object sender, RoutedEventArgs e)
         {
-            Main main = new Main();
+            DS_Layers main = new DS_Layers();
             main.CreateAndAssignALayer(FullLayersList);
         }
 
         private void RenameLayers_Click(object sender, RoutedEventArgs e)
         {
-            Main main = new Main();
-            main.GetLayersList();
+
+            DS_Layers dS_Layers = new DS_Layers();
+            dS_Layers.GetLayersList();
         }
     }
 }
