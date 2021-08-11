@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using System;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
@@ -79,19 +80,31 @@ namespace LayersSync
                 // Open the Layer table for read
                 LayerTable acLyrTbl;
                 acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
-                                             OpenMode.ForRead) as LayerTable;
+                                             OpenMode.ForWrite) as LayerTable;
                 foreach (ObjectId acObjId in acLyrTbl)
                 {
                     LayerTableRecord acLyrTblRec;
                     acLyrTblRec = acTrans.GetObject(acObjId,
-                                                    OpenMode.ForRead) as LayerTableRecord;
+                                                    OpenMode.ForWrite) as LayerTableRecord;
+
+                    if (acLyrTblRec.Name == "0" | acLyrTblRec.Name == "Defpoints")
+                        continue;
 
                     DS_Mongo dS_Mongo = new DS_Mongo();
-                    //dS_Mongo.SetNewName(acLyrTblRec.Name);
-                    
-                    
-                    MessageBox.Show(dS_Mongo.ListOutput(dS_Mongo.SplitString(acLyrTblRec.Name)));
+                    dS_Mongo.SetNewName(acLyrTblRec.Name);
+
+                    if (DS_Mongo.NewName != "")
+                            acLyrTblRec.Name = DS_Mongo.NewName;
+
+                    //MessageBox.Show(dS_Mongo.ListOutput(dS_Mongo.SplitString(acLyrTblRec.Name)));
                     //sLayerNames = sLayerNames + "\n" + acLyrTblRec.Name;
+                    // Upgrade the Layer table for write
+                    acLyrTbl.UpgradeOpen();
+
+                    // Append the new layer to the Layer table and the transaction
+                    //acLyrTbl.Add(acLyrTblRec);
+                    //acLyrTblRec.Description = newLayer.Description;
+                    //acTrans.AddNewlyCreatedDBObject(acLyrTblRec, true);
 
                 }
                 // Save the changes and dispose of the transaction

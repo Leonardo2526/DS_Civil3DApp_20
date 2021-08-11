@@ -11,7 +11,7 @@ namespace LayersSync
     class DS_Mongo
     {
         public static List<string> NewLayerName;
-
+        public static string NewName;
 
         public void SetNewName(string LayerName)
         {
@@ -41,8 +41,7 @@ namespace LayersSync
 
                     if (!collecionName.Contains("Шаблон"))
                     {
-                        GetDocuments(collecionName, LayerName, i, ref nameChanged);
-                        i++;
+                        ChangeLayerName(collecionName, LayerName, ref nameChanged);
                     }
 
 
@@ -51,35 +50,48 @@ namespace LayersSync
             }
             if (nameChanged == false)
                 return;
-            string newName = ListOutput(NewLayerName);
-            MessageBox.Show(newName);
+            NewName = ListOutput(NewLayerName);
+            MessageBox.Show(NewName);
         }
 
-        void GetDocuments(string collecionName, string LayerName, int i, ref bool nameChanged)
+        void ChangeLayerName(string collecionName, string LayerName, ref bool nameChanged)
         //Get all documents names
         {
             IMongoCollection<BsonDocument> сollection =
                 MainWindow.database.GetCollection<BsonDocument>(collecionName);
 
-            var cursor = сollection.Find(new BsonDocument()).ToCursor();
-            foreach (var document in cursor.ToEnumerable())
+            List<string> SplitedLayerName = SplitString(LayerName);
+
+            int i = 0;
+            foreach (string field in SplitedLayerName)
             {
-                string code = document[1].ToString();
-                string description = document[2].ToString();
-                if (LayerName.Contains(code) || LayerName.Contains(description))
+                var cursor = сollection.Find(new BsonDocument()).ToCursor();
+                foreach (var document in cursor.ToEnumerable())
                 {
-                    if (!NewLayerName.Contains(code))
+                    string code = document[1].ToString();
+                    string description = document[2].ToString();
+                    if (code.Contains(field) || field == description)
                     {
+
                         NewLayerName[i] = code;
                         nameChanged = true;
+                        return;
                     }
 
                 }
+                i++;
+               
+
             }
+          
+        }   
 
-        }
+       
+   
 
-        public string ListOutput(List<string> list)
+
+
+    public string ListOutput(List<string> list)
         {
 
             string delimiter = "-";
