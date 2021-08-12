@@ -1,6 +1,5 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using System;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
@@ -73,7 +72,7 @@ namespace LayersSync
             DocumentLock acLckDoc = acDoc.LockDocument();
 
             string sLayerNames = "";
-
+            int renamedLayersCount = 0;
             // Start a transaction
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
             {
@@ -93,14 +92,20 @@ namespace LayersSync
                     DS_Mongo dS_Mongo = new DS_Mongo();
                     dS_Mongo.SetNewName(acLyrTblRec.Name);
 
+                    if (IfLayerExist(acTrans, acLyrTbl, DS_Mongo.NewName) == true)
+                    {
+                        MessageBox.Show($"{DS_Mongo.NewName} alredy exist!");
+                        continue;
+                    }
+
                     if (DS_Mongo.NewName != "")
-                            acLyrTblRec.Name = DS_Mongo.NewName;
+                        acLyrTblRec.Name = DS_Mongo.NewName;
 
                     //MessageBox.Show(dS_Mongo.ListOutput(dS_Mongo.SplitString(acLyrTblRec.Name)));
                     //sLayerNames = sLayerNames + "\n" + acLyrTblRec.Name;
                     // Upgrade the Layer table for write
                     acLyrTbl.UpgradeOpen();
-
+                    renamedLayersCount++;
                     // Append the new layer to the Layer table and the transaction
                     //acLyrTbl.Add(acLyrTblRec);
                     //acLyrTblRec.Description = newLayer.Description;
@@ -111,9 +116,25 @@ namespace LayersSync
                 acTrans.Commit();
             }
 
-
+            MessageBox.Show($"{renamedLayersCount} layers have been renamed.");
         }
 
-
+        public bool IfLayerExist(Transaction acTrans, LayerTable acLyrTbl, string CheckedName)
+        {
+            //check if name exist in the current layer's list
+            bool layerExist = false;
+            foreach (ObjectId acObjId in acLyrTbl)
+            {
+                LayerTableRecord acLyrTblRecNew;
+                acLyrTblRecNew = acTrans.GetObject(acObjId,
+                                                OpenMode.ForRead) as LayerTableRecord;
+                if (acLyrTblRecNew.Name == CheckedName)
+                {
+                    layerExist = true;
+                    return layerExist;
+                }
+            }
+            return layerExist;
+        }
     }
 }

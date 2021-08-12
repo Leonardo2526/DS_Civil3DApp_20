@@ -3,7 +3,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 
 
 namespace LayersSync
@@ -31,80 +30,83 @@ namespace LayersSync
             };
             bool nameChanged = false;
 
-            using (var collCursor = MainWindow.database.ListCollections())
-            {
-                int i = 0;
-                var colls = collCursor.ToList();
-                foreach (var col in colls)
-                {
-                    string collecionName = col["name"].AsString;
 
-                    if (!collecionName.Contains("Шаблон"))
-                    {
-                        ChangeLayerName(collecionName, LayerName, ref nameChanged);
-                    }
+            ChangeLayerName(LayerName, ref nameChanged);
 
-
-
-                }
-            }
             if (nameChanged == false)
                 return;
             NewName = ListOutput(NewLayerName);
-            MessageBox.Show(NewName);
+            //MessageBox.Show(NewName);
         }
 
-        void ChangeLayerName(string collecionName, string LayerName, ref bool nameChanged)
+        void ChangeLayerName(string LayerName, ref bool nameChanged)
         //Get all documents names
         {
-            IMongoCollection<BsonDocument> сollection =
-                MainWindow.database.GetCollection<BsonDocument>(collecionName);
+
 
             List<string> SplitedLayerName = SplitString(LayerName);
 
             int i = 0;
             foreach (string field in SplitedLayerName)
             {
-                var cursor = сollection.Find(new BsonDocument()).ToCursor();
-                foreach (var document in cursor.ToEnumerable())
+                bool fieldChanged = false;
+                using (var collCursor = MainWindow.database.ListCollections())
                 {
-                    string code = document[1].ToString();
-                    string description = document[2].ToString();
-                    if (code.Contains(field) || field == description)
+                    var colls = collCursor.ToList();
+                    foreach (var col in colls)
                     {
+                        string collecionName = col["name"].AsString;
 
-                        NewLayerName[i] = code;
-                        nameChanged = true;
-                        return;
+                        if (collecionName.Contains("Шаблон"))
+                            continue;
+
+                        IMongoCollection<BsonDocument> сollection =
+            MainWindow.database.GetCollection<BsonDocument>(collecionName);
+                        var cursor = сollection.Find(new BsonDocument()).ToCursor();
+
+                        foreach (var document in cursor.ToEnumerable())
+                        {
+                            string code = document[1].ToString();
+                            string description = document[2].ToString();
+                            if (code.Contains(field) || description.Contains(field))
+                            {
+                                NewLayerName[i] = code;
+                                nameChanged = true;
+                                fieldChanged = true;
+                                break;
+                            }
+                        }
+
                     }
 
+
                 }
+
+                if (fieldChanged == false)
+                    NewLayerName[i] = field;
                 i++;
-               
-
             }
-          
-        }   
-
-       
-   
+        }
 
 
 
-    public string ListOutput(List<string> list)
+
+
+
+        public string ListOutput(List<string> list)
         {
 
             string delimiter = "-";
             string StringOutput = list.Aggregate((i, j) => i + delimiter + j);
             return StringOutput;
 
-        }    
-       
+        }
+
 
         public List<string> SplitString(string line)
         {
             char separator = Convert.ToChar("_");
-            string [] SplitedLineArray =  line.Split(separator);
+            string[] SplitedLineArray = line.Split(separator);
 
             List<string> SplitedLine = new List<string>(SplitedLineArray);
 
