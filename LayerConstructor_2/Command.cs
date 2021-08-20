@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LayerConstructor
+namespace LayersConstructor
 {
     public class Commands : IExtensionApplication
     {
@@ -29,7 +29,7 @@ namespace LayerConstructor
             MessageBox.Show("Habr!");
         }
 
-        [CommandMethod("ShowForm")]
+        [CommandMethod("DS_LayerConstructor")]
         public void ShowFormCommand()
         {
             MainWindow mainWindow = new MainWindow();

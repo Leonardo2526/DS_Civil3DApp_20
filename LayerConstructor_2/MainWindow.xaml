@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LayersConstructor"
         mc:Ignorable="d"
-        Title="MainWindow" 
-        WindowStartupLocation="{StaticResource WSL}">
+        Title="MainWindow" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <!--Set style for buttons-->
@@ -23,7 +23,6 @@
             <Setter Property="SizeToContent" Value="WidthAndHeight"/>
             <Setter Property="ResizeMode" Value="NoResize"/>
         </Style>
-        <WindowStartupLocation x:Key="WSL">CenterScreen</WindowStartupLocation>
 
         <!--Set style for borders-->
         <Style x:Key="DS_Border" TargetType="Border">

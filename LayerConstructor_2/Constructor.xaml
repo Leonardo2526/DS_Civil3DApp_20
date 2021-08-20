@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LayersConstructor"
         mc:Ignorable="d"
         Title="Consrtuctor"  
-        WindowStartupLocation="{StaticResource WSL}">
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <!--Set style for buttons-->

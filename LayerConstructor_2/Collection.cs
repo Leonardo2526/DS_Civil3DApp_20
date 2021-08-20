@@ -27,7 +27,7 @@ namespace LayersConstructor
         private List<string> GetCollectionsNames()
         //Get all collections names
         {
-            List<string> collectionsNames = new();
+            List<string> collectionsNames = new List<string>();
 
 
             using (var collCursor = MainWindow.database.ListCollections())
