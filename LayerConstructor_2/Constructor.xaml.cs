@@ -15,7 +15,7 @@ namespace LayersConstructor
     public partial class Constructor : Window
     {
         public FullPropCollection Codes { get; } = new FullPropCollection();
-        MainWindow mw = Application.Current.MainWindow as MainWindow;
+        //StartWindow mw = Application.Current.MainWindow as StartWindow;
         int SelectedField = 0;
         List<TextBox> FieldsCodes = new List<TextBox>();
         string CurrentColName;
@@ -27,7 +27,7 @@ namespace LayersConstructor
         public Constructor()
         {            
             InitializeComponent();
-            CurrentCollection.Text = MainWindow.CurrentColName;
+            CurrentCollection.Text = StartWindow.CurrentColName;
             FillFieldsList();
 
             // set datacontext to the window's instance.
@@ -38,7 +38,7 @@ namespace LayersConstructor
         //Get all documents names
         {
             IMongoCollection<BsonDocument> collection =
-            MainWindow.database.GetCollection<BsonDocument>(CurrentColName);
+            StartWindow.database.GetCollection<BsonDocument>(CurrentColName);
 
             Codes.Clear();
 
@@ -179,7 +179,7 @@ namespace LayersConstructor
         private bool IfNewNameExist(string NewName)
         //Get all documents names
         {
-            var cursor = MainWindow.CurrentCollection.Find(new BsonDocument()).ToCursor();
+            var cursor = StartWindow.CurrentCollection.Find(new BsonDocument()).ToCursor();
             foreach (var document in cursor.ToEnumerable())
             {
                 if (document[1].ToString() == NewName)
@@ -197,7 +197,7 @@ namespace LayersConstructor
                     { "description", Description}
                 };
 
-            MainWindow.CurrentCollection.InsertOne(document);
+            StartWindow.CurrentCollection.InsertOne(document);
             return document;
         }
 

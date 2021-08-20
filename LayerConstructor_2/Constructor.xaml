@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LayersConstructor"
         mc:Ignorable="d"
-        Title="Consrtuctor"  
+        Title="Consrtuctor" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>

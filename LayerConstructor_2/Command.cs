@@ -32,7 +32,7 @@ namespace LayersConstructor
         [CommandMethod("DS_LayerConstructor")]
         public void ShowFormCommand()
         {
-            MainWindow mainWindow = new MainWindow();
+            StartWindow mainWindow = new StartWindow();
             mainWindow.Show();
         }
     }

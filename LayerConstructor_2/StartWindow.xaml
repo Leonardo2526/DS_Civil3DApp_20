@@ -1,11 +1,11 @@
-﻿<Window x:Class="LayersConstructor.MainWindow"
+﻿<Window x:Class="LayersConstructor.StartWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LayersConstructor"
         mc:Ignorable="d"
-        Title="MainWindow" SizeToContent="WidthAndHeight"
+        Title="StartWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -16,12 +16,6 @@
             <Setter Property="Background" Value="LightBlue"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="Margin" Value="5"/>
-        </Style>
-
-        <!--Set style for windows-->
-        <Style x:Key="DS_Window" TargetType="Window" >
-            <Setter Property="SizeToContent" Value="WidthAndHeight"/>
-            <Setter Property="ResizeMode" Value="NoResize"/>
         </Style>
 
         <!--Set style for borders-->

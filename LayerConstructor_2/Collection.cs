@@ -30,7 +30,7 @@ namespace LayersConstructor
             List<string> collectionsNames = new List<string>();
 
 
-            using (var collCursor = MainWindow.database.ListCollections())
+            using (var collCursor = StartWindow.database.ListCollections())
             {
                 var colls = collCursor.ToList();
                 foreach (var col in colls)

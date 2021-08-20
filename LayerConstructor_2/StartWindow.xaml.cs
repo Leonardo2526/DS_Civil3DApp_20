@@ -10,7 +10,7 @@ namespace LayersConstructor
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class StartWindow : Window
     {
         public static MongoClient client;
         public static string CurrentDBName;
@@ -20,7 +20,7 @@ namespace LayersConstructor
         public static string CurrentColName;
         public static IMongoCollection<BsonDocument> CurrentCollection;
 
-        public MainWindow()
+        public StartWindow()
         {
             
 
@@ -98,7 +98,7 @@ namespace LayersConstructor
         public List<string> GetCollectionsNames()
         //Get all collections names
         {
-            using (var collCursor = MainWindow.database.ListCollections())
+            using (var collCursor = StartWindow.database.ListCollections())
             {
                 var colls = collCursor.ToList();
                 foreach (var col in colls)
