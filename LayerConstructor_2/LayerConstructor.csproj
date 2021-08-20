@@ -7,8 +7,8 @@
     <ProjectGuid>{58724D68-5B3E-4558-ABA2-1C2B98E3886A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LayerConstructor_2</RootNamespace>
-    <AssemblyName>LayerConstructor_2</AssemblyName>
+    <RootNamespace>LayerConstructor</RootNamespace>
+    <AssemblyName>LayerConstructor</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -141,11 +141,15 @@
     <Compile Include="Constructor.xaml.cs">
       <DependentUpon>Constructor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DS_Layers.cs" />
+    <Compile Include="Models\LayerField.cs" />
     <Compile Include="StartWindow.xaml.cs">
       <DependentUpon>StartWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MyObject.cs" />
-    <Compile Include="NamesCollection.cs" />
+    <Compile Include="Models\MyObject.cs" />
+    <Compile Include="ViewModels\LayersFieldsCollection.cs" />
+    <Compile Include="ViewModels\FullPropCollection.cs" />
+    <Compile Include="ViewModels\NamesCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

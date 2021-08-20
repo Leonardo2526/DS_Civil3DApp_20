@@ -171,10 +171,15 @@ namespace LayersConstructor
             }
 
             InsertOneDoc(LayerCode, LayerDescription);
+
+            DS_Layers main = new DS_Layers();
+            main.CreateAndAssignALayer(LayerCode, LayerDescription);
+
             MessageBox.Show("Layer\n'" + LayerCode + "'\nhas been created succefully!");
 
-            EmptyFields();
+            //EmptyFields();
         }
+       
 
         private bool IfNewNameExist(string NewName)
         //Get all documents names

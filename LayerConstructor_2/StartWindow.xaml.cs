@@ -149,8 +149,14 @@ namespace LayersConstructor
 
         private void CreateNew_Click(object sender, RoutedEventArgs e)
         {
-            Constructor constructor = new Constructor();
-            constructor.Show();
+            if (CurrentColName == "")
+                MessageBox.Show("Chose collection!");
+            else
+            {
+                Constructor constructor = new Constructor();
+                constructor.Show();
+            }
+            
         }
     }
 }
