@@ -15,7 +15,7 @@ namespace LayersConstructor
     public partial class Constructor : Window
     {
         public FullPropCollection Codes { get; } = new FullPropCollection();
-        //StartWindow mw = Application.Current.MainWindow as StartWindow;
+
         int SelectedField = 0;
         List<TextBox> FieldsCodes = new List<TextBox>();
         string CurrentColName;
@@ -70,12 +70,12 @@ namespace LayersConstructor
             if (DocumentsListBox.SelectedItem != null)
             {        
                 //Add code value to TextBox
-                FieldsCodes[SelectedField - 1].Text = (DocumentsListBox.SelectedItem as MyObject).Name;
+                FieldsCodes[SelectedField - 1].Text = (DocumentsListBox.SelectedItem as LayerField).Code;
 
                 //Add values to arrays of layer code and description
-                LayerCodesList[SelectedField -1] = (DocumentsListBox.SelectedItem as MyObject).Name;
+                LayerCodesList[SelectedField -1] = (DocumentsListBox.SelectedItem as LayerField).Code;
                 if (SelectedField != 1)
-                LayerDescriptionsList[SelectedField - 2] = (DocumentsListBox.SelectedItem as MyObject).Description;
+                LayerDescriptionsList[SelectedField - 2] = (DocumentsListBox.SelectedItem as LayerField).Description;
             }
         }
        
@@ -227,5 +227,10 @@ namespace LayersConstructor
             return true;
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            ((StartWindow)Application.Current.MainWindow).RefreshDocNames(CurrentColName);
+
+        }
     }
 }

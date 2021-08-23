@@ -14,16 +14,16 @@ namespace LayersConstructor
     {
         public static MongoClient client;
         public static string CurrentDBName;
-        readonly List<string> DBNamesList = new List<string>();
+        readonly List<string> DBNamesList;
         public static IMongoDatabase database;
-        public static List<string> collectionsNames = new List<string>();
+        public static List<string> collectionsNames ;
         public static string CurrentColName;
         public static IMongoCollection<BsonDocument> CurrentCollection;
 
         public StartWindow()
         {
+            DBNamesList = new List<string>();
             
-
             ConnectionToMongoClient();
 
             if (DBNamesList.Count == 0)
@@ -83,17 +83,13 @@ namespace LayersConstructor
 
             if (database != null)
             {
-                RefreshObjectsInListBox();
+                collectionsNames = new List<string>();
+                RefreshCollectionNames();
+                Codes.Clear();
             }
 
         }
        
-        //Collections
-
-        
-
-
-        // must be a property! This is your instance...
         public NamesCollection MyObjects { get; } = new NamesCollection();
         public List<string> GetCollectionsNames()
         //Get all collections names
@@ -103,6 +99,7 @@ namespace LayersConstructor
                 var colls = collCursor.ToList();
                 foreach (var col in colls)
                 {
+                    if (col["name"].AsString.Contains("Шаблон"))
                     collectionsNames.Add(col["name"].AsString);
                 }
             }
@@ -110,7 +107,7 @@ namespace LayersConstructor
             return collectionsNames;
         }
 
-        public void RefreshObjectsInListBox()
+        public void RefreshCollectionNames()
         {
             string[] Col_Array = GetCollectionsNames().ToArray();
             Array.Sort(Col_Array);
@@ -121,9 +118,9 @@ namespace LayersConstructor
             foreach (string name in Col_Array)
                 MyObjects.Add(name);
         }
-                
-      
-        public FullPropCollection Codes { get; } = new FullPropCollection();       
+
+
+        public FullPropCollection Codes { get; set; } = new FullPropCollection();
 
         public void RefreshDocNames(string CurrentColName)
         //Get all documents names
@@ -142,8 +139,12 @@ namespace LayersConstructor
 
         private void CollectionsListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            CurrentColName = (CollectionsListBox.SelectedItem as MyObject).Name;
-            RefreshDocNames(CurrentColName);
+            if (CollectionsListBox.SelectedItem != null)
+            {
+                CurrentColName = (CollectionsListBox.SelectedItem as MyObject).Name;
+                RefreshDocNames(CurrentColName);
+            }
+            
 
         }
 
@@ -155,8 +156,26 @@ namespace LayersConstructor
             {
                 Constructor constructor = new Constructor();
                 constructor.Show();
+                RefreshDocNames(CurrentColName);
             }
-            
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (DocumentsListBox.SelectedItems != null)
+            {
+                foreach (var item in DocumentsListBox.SelectedItems)
+                {
+                    string docName = (item as LayerField).Code;
+                    var filter = new BsonDocument("code", docName);
+                    CurrentCollection.DeleteOne(filter);
+                }
+                RefreshDocNames(CurrentColName);
+            }
+            else
+            {
+                MessageBox.Show("Chose item at first.");
+            }
         }
     }
 }

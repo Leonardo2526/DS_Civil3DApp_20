@@ -3,11 +3,11 @@
 namespace LayersConstructor
 {
    
-    public class FullPropCollection : ObservableCollection<MyObject>
+    public class FullPropCollection : ObservableCollection<LayerField>
     {      
-        public void Add(string name, string decription)
+        public void Add(string code, string decription)
         {
-            this.Add(new MyObject { Name = name, Description = decription });
+            this.Add(new LayerField { Code = code, Description = decription });
         }
     }
 }

@@ -8,7 +8,6 @@ namespace LayersConstructor
     public class MyObject : INotifyPropertyChanged
     {
         private string _name;
-        private string _decription;
 
 
         // a property.
@@ -26,20 +25,8 @@ namespace LayersConstructor
         }
 
 
-        // a property.
-        public string Description
-        {
-            get { return _decription; }
-            set
-            {
-                if (_decription != value)
-                {
-                    _decription = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Description)));
-                }
-            }
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
     }
+
+     
 }

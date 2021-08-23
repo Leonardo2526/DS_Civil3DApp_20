@@ -66,7 +66,7 @@
                      Height="400">                
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Code" Width="Auto" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Code" Width="Auto" DisplayMemberBinding="{Binding Code}"/>
                         <GridViewColumn Header="Description" Width="Auto"  DisplayMemberBinding="{Binding Description}"/>
                     </GridView>
                 </ListView.View>               
@@ -76,7 +76,7 @@
             <Button x:Name="CreateNew" Style="{StaticResource DS_Button}" Click="CreateNew_Click">CreateNew</Button>
             <Button x:Name="Rename" Style="{StaticResource DS_Button}">Rename</Button>
             <Button x:Name="RenameByTemplate" Style="{StaticResource DS_Button}">Rename by template</Button>
-            <Button x:Name="Delete" Style="{StaticResource DS_Button}">Delete</Button>
+            <Button x:Name="Delete" Style="{StaticResource DS_Button}" Click="Delete_Click">Delete</Button>
         </StackPanel>
 
     </Grid>

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LayersConstructor"
         mc:Ignorable="d"
         Title="Consrtuctor" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" Closed="Window_Closed">
 
     <Window.Resources>
         <!--Set style for buttons-->
@@ -110,7 +110,7 @@
                      Height="400" Margin="10" SelectionChanged="DocumentsListBox_SelectionChanged">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
                         <GridViewColumn Header="Description" Width="Auto"  DisplayMemberBinding="{Binding Description}"/>
                     </GridView>
                 </ListView.View>
