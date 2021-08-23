@@ -22,9 +22,11 @@ namespace LayersConstructor
 
         string[] LayerCodesList = new string [10];
         string[] LayerDescriptionsList = new string[10];
+        public static string MajorCollectionName;
 
+        private StartWindow startWindow { get; }
 
-        public Constructor()
+        public Constructor(StartWindow sw)
         {            
             InitializeComponent();
             CurrentCollection.Text = StartWindow.CurrentColName;
@@ -32,9 +34,11 @@ namespace LayersConstructor
 
             // set datacontext to the window's instance.
             this.DataContext = this;
+
+           startWindow = sw;
         }
 
-        public void RefreshDocNames(string CurrentColName)
+        public void RefreshDocNames()
         //Get all documents names
         {
             IMongoCollection<BsonDocument> collection =
@@ -84,70 +88,70 @@ namespace LayersConstructor
         {
             SelectedField = 1;
             CurrentColName = "01_Раздел";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field2_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 2;
             CurrentColName = "02_Элемент";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field3_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 3;
             CurrentColName = "03_Отображение";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field4_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 4;
             CurrentColName = "04_Сектор";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field5_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 5;
             CurrentColName = "05_Подтип";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field6_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 6;
             CurrentColName = "06_Дополнительно";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field7_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 7;
             CurrentColName = "07_Статус";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field8_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 8;
             CurrentColName = "08_Стадия";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field9_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 9;
             CurrentColName = "09_Проекция";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void Field10_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             SelectedField = 10;
             CurrentColName = "10_Материал";
-            RefreshDocNames(CurrentColName);
+            RefreshDocNames();
         }
 
         private void CreateLayer_Click(object sender, RoutedEventArgs e)
@@ -229,7 +233,7 @@ namespace LayersConstructor
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            ((StartWindow)Application.Current.MainWindow).RefreshDocNames(CurrentColName);
+            startWindow.RefreshDocNames();
 
         }
     }

@@ -22,6 +22,8 @@ namespace LayersConstructor
 
         public StartWindow()
         {
+            
+
             DBNamesList = new List<string>();
             
             ConnectionToMongoClient();
@@ -122,7 +124,7 @@ namespace LayersConstructor
 
         public FullPropCollection Codes { get; set; } = new FullPropCollection();
 
-        public void RefreshDocNames(string CurrentColName)
+        public void RefreshDocNames()
         //Get all documents names
         {
             CurrentCollection = database.GetCollection<BsonDocument>(CurrentColName);
@@ -142,7 +144,7 @@ namespace LayersConstructor
             if (CollectionsListBox.SelectedItem != null)
             {
                 CurrentColName = (CollectionsListBox.SelectedItem as MyObject).Name;
-                RefreshDocNames(CurrentColName);
+                RefreshDocNames();
             }
             
 
@@ -153,11 +155,20 @@ namespace LayersConstructor
             if (CurrentColName == "")
                 MessageBox.Show("Chose collection!");
             else
-            {
-                Constructor constructor = new Constructor();
-                constructor.Show();
-                RefreshDocNames(CurrentColName);
+            {              
+                Constructor constructor = new Constructor(this);
+                constructor.Show();               
             }
+        }
+
+        private void Constructor_Closed1(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Constructor_Closed(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -170,7 +181,7 @@ namespace LayersConstructor
                     var filter = new BsonDocument("code", docName);
                     CurrentCollection.DeleteOne(filter);
                 }
-                RefreshDocNames(CurrentColName);
+                RefreshDocNames();
             }
             else
             {
