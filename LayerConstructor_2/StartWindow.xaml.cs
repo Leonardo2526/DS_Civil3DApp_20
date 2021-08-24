@@ -154,7 +154,7 @@ namespace LayersConstructor
 
         private void CreateNew_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentColName == "")
+            if (CurrentCollection == null)
                 MessageBox.Show("Chose collection!");
             else if (!CurrentColName.Contains("Шаблон"))
                 MessageBox.Show("Chose collection of 'Шаблон' type.");

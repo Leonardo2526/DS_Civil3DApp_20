@@ -71,6 +71,7 @@ namespace LayersConstructor
 
         private void DocumentsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             if (DocumentsListBox.SelectedItem != null)
             {
                 //Add code value to TextBox
@@ -94,8 +95,10 @@ namespace LayersConstructor
 
             string delimiter = "-";
             string LayerCode = LayerCodesList.Aggregate((i, j) => i + delimiter + j);
-            LayerDescriptionsList = LayerDescriptionsList.Where(c => c != null).ToArray();
-            string LayerDescription = LayerDescriptionsList.Aggregate((i, j) => i + delimiter + j);
+
+            string[] NewLayerDescriptionsList = new string[10];
+            NewLayerDescriptionsList = LayerDescriptionsList.Where(c => c != null).ToArray();
+            string LayerDescription = NewLayerDescriptionsList.Aggregate((i, j) => i + delimiter + j);
 
             if (IfNewNameExistInDB(LayerCode) == true)
             {
@@ -113,6 +116,7 @@ namespace LayersConstructor
             else
                 MessageBox.Show("Layer\n'" + LayerCode + "'\nhas been added to DB succefully!\n It already exist in layers list.");
 
+            
             //EmptyFields();
         }
 

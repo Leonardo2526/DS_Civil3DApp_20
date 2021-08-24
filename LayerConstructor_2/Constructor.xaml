@@ -70,34 +70,34 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="Field1" Grid.Column="0" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field1" ToolTip="Наименование раздела" Grid.Column="0" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field1_GotKeyboardFocus"/>
                 <Label Grid.Column="0" Grid.Row="1"  Content="Field1" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field2" Grid.Column="1" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field2" ToolTip="Элемент" Grid.Column="1" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field2_GotKeyboardFocus"/>
                 <Label Grid.Column="1" Grid.Row="1"  Content="Field2" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field3" Grid.Column="2" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field3" ToolTip="Графическое отображение" Grid.Column="2" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field3_GotKeyboardFocus"/>
                 <Label Grid.Column="2" Grid.Row="1"  Content="Field3" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field4" Grid.Column="3" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field4" ToolTip="Сектор" Grid.Column="3" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field4_GotKeyboardFocus"/>
                 <Label Grid.Column="3" Grid.Row="1"  Content="Field4" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field5" Grid.Column="4" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field5" ToolTip="Подтип объекта отображения" Grid.Column="4" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field5_GotKeyboardFocus"/>
                 <Label Grid.Column="4" Grid.Row="1"  Content="Field5" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field6" Grid.Column="5" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field6" ToolTip="Дополнительная информация" Grid.Column="5" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field6_GotKeyboardFocus"/>
                 <Label Grid.Column="5" Grid.Row="1"  Content="Field6" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field7" Grid.Column="6" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field7" ToolTip="Статус" Grid.Column="6" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field7_GotKeyboardFocus"/>
                 <Label Grid.Column="6" Grid.Row="1"  Content="Field7" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field8" Grid.Column="7" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field8" ToolTip="Стадия" Grid.Column="7" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field8_GotKeyboardFocus"/>
                 <Label Grid.Column="7" Grid.Row="1"  Content="Field8" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field9" Grid.Column="8" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field9" ToolTip="Проекция" Grid.Column="8" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field9_GotKeyboardFocus"/>
                 <Label Grid.Column="8" Grid.Row="1"  Content="Field9" HorizontalContentAlignment="Center"/>
-                <TextBox x:Name="Field10" Grid.Column="9" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
+                <TextBox x:Name="Field10" ToolTip="Материал" Grid.Column="9" Grid.Row="0" Style="{StaticResource FieldsTextBox}"
                          GotKeyboardFocus="Field10_GotKeyboardFocus"/>
                 <Label Grid.Column="9" Grid.Row="1"  Content="Field10" HorizontalContentAlignment="Center"/>
             </Grid>
