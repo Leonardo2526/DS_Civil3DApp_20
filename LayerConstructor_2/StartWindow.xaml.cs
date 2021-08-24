@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,17 @@ namespace LayersConstructor
         public static string CurrentDBName;
         readonly List<string> DBNamesList;
         public static IMongoDatabase database;
-        public static List<string> collectionsNames ;
+        public static List<string> collectionsNames;
         public static string CurrentColName;
         public static IMongoCollection<BsonDocument> CurrentCollection;
+        
 
         public StartWindow()
         {
-            
+
 
             DBNamesList = new List<string>();
-            
+
             ConnectionToMongoClient();
 
             if (DBNamesList.Count == 0)
@@ -91,7 +93,7 @@ namespace LayersConstructor
             }
 
         }
-       
+
         public NamesCollection MyObjects { get; } = new NamesCollection();
         public List<string> GetCollectionsNames()
         //Get all collections names
@@ -128,15 +130,15 @@ namespace LayersConstructor
         //Get all documents names
         {
             CurrentCollection = database.GetCollection<BsonDocument>(CurrentColName);
-
             Codes.Clear();
 
-            var cursor = CurrentCollection.Find(new BsonDocument()).ToCursor();
+            var cursor = CurrentCollection.Find(new BsonDocument()).Sort("{description: 1 }").ToCursor();
+
             foreach (var document in cursor.ToEnumerable())
             {
                 Codes.Add(document[1].ToString(), document[2].ToString());
             }
-
+            
         }
 
         private void CollectionsListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -146,7 +148,7 @@ namespace LayersConstructor
                 CurrentColName = (CollectionsListBox.SelectedItem as MyObject).Name;
                 RefreshDocNames();
             }
-            
+
 
         }
 
@@ -154,10 +156,12 @@ namespace LayersConstructor
         {
             if (CurrentColName == "")
                 MessageBox.Show("Chose collection!");
+            else if (!CurrentColName.Contains("Шаблон"))
+                MessageBox.Show("Chose collection of 'Шаблон' type.");
             else
-            {              
+            {
                 Constructor constructor = new Constructor(this);
-                constructor.Show();               
+                constructor.Show();
             }
         }
 
@@ -188,5 +192,50 @@ namespace LayersConstructor
                 MessageBox.Show("Chose item at first.");
             }
         }
+
+        private void AddALayers_Click(object sender, RoutedEventArgs e)
+        {
+            if (DocumentsListBox.SelectedItems != null)
+            {
+                DS_Layers dS_Layers = new DS_Layers();
+                List<string> ExistLayers = new List<string>();
+
+                int i = 0;
+
+                foreach (var item in DocumentsListBox.SelectedItems)
+                {
+                    string itemName = (item as LayerField).Code;
+                    string itemDescription = (item as LayerField).Description;
+                    dS_Layers.CreateAndAssignALayer(itemName, itemDescription);
+
+                    if (dS_Layers.IfLayerCreated == true)
+                        i++;
+                    else
+                    {
+                        ExistLayers.Add(itemName);
+                    }
+                }
+                if (i != 0)
+                {
+                    MessageBox.Show($"{i} layers have been created successfully!\n");
+
+                    if (ExistLayers.Count !=0)
+                    {
+                        Log log = new Log();
+                        log.OutputExistingLayerList(ExistLayers, "layers list");
+                    }
+                }
+                else
+                    MessageBox.Show("Selected layers names alredy exist in current document.");
+            }
+            else
+            {
+                MessageBox.Show("Chose item at first.");
+            }
+        }
+
+       
+
+
     }
 }

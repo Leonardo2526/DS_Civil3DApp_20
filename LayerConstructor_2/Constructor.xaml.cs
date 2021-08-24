@@ -20,14 +20,14 @@ namespace LayersConstructor
         List<TextBox> FieldsCodes = new List<TextBox>();
         string CurrentColName;
 
-        string[] LayerCodesList = new string [10];
+        string[] LayerCodesList = new string[10];
         string[] LayerDescriptionsList = new string[10];
         public static string MajorCollectionName;
 
         private StartWindow startWindow { get; }
 
         public Constructor(StartWindow sw)
-        {            
+        {
             InitializeComponent();
             CurrentCollection.Text = StartWindow.CurrentColName;
             FillFieldsList();
@@ -35,7 +35,7 @@ namespace LayersConstructor
             // set datacontext to the window's instance.
             this.DataContext = this;
 
-           startWindow = sw;
+            startWindow = sw;
         }
 
         public void RefreshDocNames()
@@ -46,7 +46,7 @@ namespace LayersConstructor
 
             Codes.Clear();
 
-            var cursor = collection.Find(new BsonDocument()).ToCursor();
+            var cursor = collection.Find(new BsonDocument()).Sort("{ description: 1 }").ToCursor();
             foreach (var document in cursor.ToEnumerable())
             {
                 Codes.Add(document[1].ToString(), document[2].ToString());
@@ -72,17 +72,190 @@ namespace LayersConstructor
         private void DocumentsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DocumentsListBox.SelectedItem != null)
-            {        
+            {
                 //Add code value to TextBox
                 FieldsCodes[SelectedField - 1].Text = (DocumentsListBox.SelectedItem as LayerField).Code;
 
                 //Add values to arrays of layer code and description
-                LayerCodesList[SelectedField -1] = (DocumentsListBox.SelectedItem as LayerField).Code;
+                LayerCodesList[SelectedField - 1] = (DocumentsListBox.SelectedItem as LayerField).Code;
                 if (SelectedField != 1)
-                LayerDescriptionsList[SelectedField - 2] = (DocumentsListBox.SelectedItem as LayerField).Description;
+                    LayerDescriptionsList[SelectedField - 2] = (DocumentsListBox.SelectedItem as LayerField).Description;
             }
         }
-       
+
+        private void CreateLayer_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (IfLayerCodeFormatCorrect() == false)
+            {
+                MessageBox.Show("Error ocured! \nFields 1 and 2 are mandatory fields!");
+                return;
+            }
+
+            string delimiter = "-";
+            string LayerCode = LayerCodesList.Aggregate((i, j) => i + delimiter + j);
+            LayerDescriptionsList = LayerDescriptionsList.Where(c => c != null).ToArray();
+            string LayerDescription = LayerDescriptionsList.Aggregate((i, j) => i + delimiter + j);
+
+            if (IfNewNameExistInDB(LayerCode) == true)
+            {
+                MessageBox.Show("This layer alredy exist in DB.\nEnter another name.");
+                return;
+            }
+
+            InsertOneDoc(LayerCode, LayerDescription);
+            DS_Layers dS_Layers = new DS_Layers();
+            dS_Layers.CreateAndAssignALayer(LayerCode, LayerDescription);
+
+            //Check if layer added to layers list
+            if (dS_Layers.IfLayerCreated == true)
+                MessageBox.Show("Layer\n'" + LayerCode + "'\nhas been added to DB and layers list succefully!");
+            else
+                MessageBox.Show("Layer\n'" + LayerCode + "'\nhas been added to DB succefully!\n It already exist in layers list.");
+
+            //EmptyFields();
+        }
+
+
+        private bool IfNewNameExistInDB(string NewName)
+        //Get all documents names
+        {
+            var cursor = StartWindow.CurrentCollection.Find(new BsonDocument()).ToCursor();
+            foreach (var document in cursor.ToEnumerable())
+            {
+                if (document[1].ToString() == NewName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static BsonDocument InsertOneDoc(string Code, string Description)
+        {
+            var document = new BsonDocument
+                {
+                    { "code", Code },
+                    { "description", Description}
+                };
+
+            StartWindow.CurrentCollection.InsertOne(document);
+            return document;
+        }
+
+        private bool IfLayerCodeFormatCorrect()
+        {
+            if (LayerCodesList[0] == null || LayerCodesList[1] == null)
+                return false;
+
+            int i = 0;
+            foreach (string item in LayerCodesList)
+            {
+                if (item == null)
+                {
+                    if (i > 1 && i < 7 | i == 9)
+                        LayerCodesList[i] = "____";
+                    else
+                        LayerCodesList[i] = "_";
+                }
+                i++;
+
+            }
+            return true;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            startWindow.RefreshDocNames();
+
+        }
+
+        private void CheckForCreateObjectLayers(string LayerCode, string LayerDescription,
+             ref List<string> ExistLayers, ref int i)
+        {
+            if (IfNewNameExistInDB(LayerCode) == false)
+            {
+                InsertOneDoc(LayerCode, LayerDescription);
+                i++;
+            }
+            else
+            {
+                ExistLayers.Add(LayerCode);
+            }
+        }
+
+        private void CreateObjectLayers_Click(object sender, RoutedEventArgs e)
+        {
+            if (Field1.Text == "")
+            {
+                MessageBox.Show("Error occured!\n You have to fill 'Field1' for this option.");
+                return;
+            }
+
+            IMongoCollection<BsonDocument> ObjectsCollection =
+                StartWindow.database.GetCollection<BsonDocument>("03_Отображение");
+
+            IMongoCollection<BsonDocument> Collection =
+                StartWindow.CurrentCollection;
+
+            List<string> ObjectsWithLabel = new List<string>
+            {
+                "Вид профиля",
+                "Вид сечения",
+                "Водосбор",
+                "Колодец",
+                "Линия соответствия",
+                "Напорная труба",
+                "Ось сечения",
+                "Перекрёсток",
+                "Поверхность TIN",
+                "Профилирование",
+                "Профиль",
+                "Рамка вида",
+                "Сегмент участка",
+                "Сечение",
+                "Трасса",
+                "Труба",
+                "Устройство регулирования потока",
+                "Участок",
+                "Фитинг"
+            };
+            List<string> ExistLayers = new List<string>();
+
+            //Create docs
+            int i = 0;
+            var cursor = ObjectsCollection.Find(new BsonDocument()).ToCursor();
+            foreach (var document in cursor.ToEnumerable())
+            {
+                string LayerDescription = document[2].ToString();
+                string LayerCode = Field1.Text + "-" + document[1].ToString();
+
+                CheckForCreateObjectLayers(LayerCode, LayerDescription, ref ExistLayers, ref i);
+
+                //Add labels
+                if (ObjectsWithLabel.Contains(LayerDescription))
+                {
+                    LayerDescription += "-Метка";
+                    LayerCode += "-МЕТК";
+                    CheckForCreateObjectLayers(LayerCode, LayerDescription, ref ExistLayers, ref i);
+                }
+            }
+            if (i != 0)
+            {
+                MessageBox.Show($"{i} layers have been added to DB succefully!!");
+
+                if (ExistLayers.Count != 0)
+                {
+                    Log log = new Log();
+                    log.OutputExistingLayerList(ExistLayers, "DB");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selected layers names alredy exist in current document.");
+            }
+
+            RefreshDocNames();
+        }
 
         private void Field1_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
@@ -153,163 +326,6 @@ namespace LayersConstructor
             CurrentColName = "10_Материал";
             RefreshDocNames();
         }
-
-        private void CreateLayer_Click(object sender, RoutedEventArgs e)
-        {
-           
-            if (IfLayerCodeFormatCorrect() == false)
-            {
-                MessageBox.Show("Error ocured! \nFields 1 and 2 are mandatory fields!");
-                return;
-            }
-
-            string delimiter = "-";
-            string LayerCode = LayerCodesList.Aggregate((i, j) => i + delimiter + j);
-            LayerDescriptionsList = LayerDescriptionsList.Where(c => c != null).ToArray();
-            string LayerDescription = LayerDescriptionsList.Aggregate((i, j) => i + delimiter + j);
-
-            if (IfNewNameExist(LayerCode) == true)
-            {
-                MessageBox.Show("This layer alredy exist.\nEnter another name.");
-                return;
-            }
-
-            InsertOneDoc(LayerCode, LayerDescription);
-
-            DS_Layers main = new DS_Layers();
-            main.CreateAndAssignALayer(LayerCode, LayerDescription);
-
-            MessageBox.Show("Layer\n'" + LayerCode + "'\nhas been created succefully!");
-
-            //EmptyFields();
-        }
-       
-
-        private bool IfNewNameExist(string NewName)
-        //Get all documents names
-        {
-            var cursor = StartWindow.CurrentCollection.Find(new BsonDocument()).ToCursor();
-            foreach (var document in cursor.ToEnumerable())
-            {
-                if (document[1].ToString() == NewName)
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static BsonDocument InsertOneDoc(string Code, string Description)
-        {
-            var document = new BsonDocument
-                {
-                    { "code", Code },
-                    { "description", Description}
-                };
-
-            StartWindow.CurrentCollection.InsertOne(document);
-            return document;
-        }
-
-        private bool IfLayerCodeFormatCorrect()
-        {
-            if (LayerCodesList[0] == null || LayerCodesList[1] == null)
-                return false;
-
-            int i = 0;
-            foreach (string item in LayerCodesList)
-            {
-                if (item == null)
-                {
-                    if (i > 1 && i < 7 | i == 9)
-                        LayerCodesList[i] = "____";
-                    else
-                        LayerCodesList[i] = "_";
-                }
-                i++;
-
-            }
-            return true;
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            startWindow.RefreshDocNames();
-
-        }
-
-        private void CheckForCreateObjectLayers(string LayerCode, string LayerDescription,
-            IMongoCollection<BsonDocument> Collection, ref int i)
-        {
-            if (IfNewNameExist(LayerCode) == false)
-            {
-                InsertOneDoc(LayerCode, LayerDescription);
-                i++;
-            }
-            else
-            {
-                MessageBox.Show("Layer '" + LayerCode + "' alredy exist.\nEnter another name.");
-            }
-        }
-
-        private void CreateObjectLayers_Click(object sender, RoutedEventArgs e)
-        {
-            if (Field1.Text == "")
-            {
-                MessageBox.Show("Error occured!\n You have to fill 'Field1' for this option.");
-                return;
-            }
-
-            IMongoCollection<BsonDocument> ObjectsCollection =
-                StartWindow.database.GetCollection<BsonDocument>("03_Отображение");
-
-            IMongoCollection<BsonDocument> Collection =
-                StartWindow.CurrentCollection;
-
-            List<string> ObjectsWithLabel = new List<string>
-            {
-                "Вид профиля",
-                "Вид сечения",
-                "Водосбор",
-                "Колодец",
-                "Линия соответствия",
-                "Напорная труба",
-                "Ось сечения",
-                "Перекрёсток",
-                "Поверхность TIN",
-                "Профилирование",
-                "Профиль",
-                "Рамка вида",
-                "Сегмент участка",
-                "Сечение",
-                "Трасса",
-                "Труба",
-                "Устройство регулирования потока",
-                "Участок",
-                "Фитинг"
-            };
-
-            //Create docs
-            int i = 0;
-            var cursor = ObjectsCollection.Find(new BsonDocument()).ToCursor();
-            foreach (var document in cursor.ToEnumerable())
-            {
-                string LayerDescription = document[2].ToString();
-                string LayerCode = Field1.Text + "-" + document[1].ToString();
-
-                CheckForCreateObjectLayers(LayerCode, LayerDescription, Collection, ref i);
-
-                //Add labels
-                if (ObjectsWithLabel.Contains(LayerDescription))
-                {
-                    LayerDescription += "-Метка";
-                    LayerCode += "-МЕТК";
-                    CheckForCreateObjectLayers(LayerCode, LayerDescription, Collection, ref i);
-                }
-            }
-
-            MessageBox.Show(i + " layers\n has been created succefully!");
-            RefreshDocNames();
-        }
     }
-    
+
 }

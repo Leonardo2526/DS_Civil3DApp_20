@@ -73,10 +73,15 @@
             </ListView>
         </StackPanel>
         <StackPanel Grid.Column="2" Margin="10" Width="120">
-            <Button x:Name="CreateNew" Style="{StaticResource DS_Button}" Click="CreateNew_Click">CreateNew</Button>
-            <Button x:Name="Rename" Style="{StaticResource DS_Button}">Rename</Button>
-            <Button x:Name="RenameByTemplate" Style="{StaticResource DS_Button}">Rename by template</Button>
-            <Button x:Name="Delete" Style="{StaticResource DS_Button}" Click="Delete_Click">Delete</Button>
+            <Button x:Name="CreateNew" Style="{StaticResource DS_Button}" Click="CreateNew_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Create new layer</TextBlock>
+            </Button>
+            <Button x:Name="AddLayers" Style="{StaticResource DS_Button}" Click="AddALayers_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Add items to layers list</TextBlock>
+            </Button>
+            <Button x:Name="Delete" Style="{StaticResource DS_Button}" Click="Delete_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Delete from DB</TextBlock>
+            </Button>
         </StackPanel>
 
     </Grid>
