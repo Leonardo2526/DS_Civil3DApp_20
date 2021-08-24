@@ -116,8 +116,13 @@
                 </ListView.View>
                 </ListView>
         </StackPanel>
-        <StackPanel Grid.Row="3" Margin="10">
-            <Button x:Name="CreateLayer" Content="Creare Layer" Style="{StaticResource DS_Button}" HorizontalAlignment="Left" Click="CreateLayer_Click"/>
+        <StackPanel Grid.Row="3" Margin="10" Orientation="Horizontal">
+            <Button x:Name="CreateLayer" Content="Creare Layer" Style="{StaticResource DS_Button}" 
+                    HorizontalAlignment="Left" Click="CreateLayer_Click"/>
+            <Button x:Name="CreateObjectLayers" Style="{StaticResource DS_Button}" 
+                    Click="CreateObjectLayers_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Creare object layers</TextBlock>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

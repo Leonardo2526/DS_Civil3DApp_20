@@ -101,7 +101,7 @@ namespace LayersConstructor
                 var colls = collCursor.ToList();
                 foreach (var col in colls)
                 {
-                    if (col["name"].AsString.Contains("Шаблон"))
+                    //if (col["name"].AsString.Contains("Шаблон"))
                     collectionsNames.Add(col["name"].AsString);
                 }
             }

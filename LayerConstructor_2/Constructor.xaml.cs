@@ -236,5 +236,80 @@ namespace LayersConstructor
             startWindow.RefreshDocNames();
 
         }
+
+        private void CheckForCreateObjectLayers(string LayerCode, string LayerDescription,
+            IMongoCollection<BsonDocument> Collection, ref int i)
+        {
+            if (IfNewNameExist(LayerCode) == false)
+            {
+                InsertOneDoc(LayerCode, LayerDescription);
+                i++;
+            }
+            else
+            {
+                MessageBox.Show("Layer '" + LayerCode + "' alredy exist.\nEnter another name.");
+            }
+        }
+
+        private void CreateObjectLayers_Click(object sender, RoutedEventArgs e)
+        {
+            if (Field1.Text == "")
+            {
+                MessageBox.Show("Error occured!\n You have to fill 'Field1' for this option.");
+                return;
+            }
+
+            IMongoCollection<BsonDocument> ObjectsCollection =
+                StartWindow.database.GetCollection<BsonDocument>("03_Отображение");
+
+            IMongoCollection<BsonDocument> Collection =
+                StartWindow.CurrentCollection;
+
+            List<string> ObjectsWithLabel = new List<string>
+            {
+                "Вид профиля",
+                "Вид сечения",
+                "Водосбор",
+                "Колодец",
+                "Линия соответствия",
+                "Напорная труба",
+                "Ось сечения",
+                "Перекрёсток",
+                "Поверхность TIN",
+                "Профилирование",
+                "Профиль",
+                "Рамка вида",
+                "Сегмент участка",
+                "Сечение",
+                "Трасса",
+                "Труба",
+                "Устройство регулирования потока",
+                "Участок",
+                "Фитинг"
+            };
+
+            //Create docs
+            int i = 0;
+            var cursor = ObjectsCollection.Find(new BsonDocument()).ToCursor();
+            foreach (var document in cursor.ToEnumerable())
+            {
+                string LayerDescription = document[2].ToString();
+                string LayerCode = Field1.Text + "-" + document[1].ToString();
+
+                CheckForCreateObjectLayers(LayerCode, LayerDescription, Collection, ref i);
+
+                //Add labels
+                if (ObjectsWithLabel.Contains(LayerDescription))
+                {
+                    LayerDescription += "-Метка";
+                    LayerCode += "-МЕТК";
+                    CheckForCreateObjectLayers(LayerCode, LayerDescription, Collection, ref i);
+                }
+            }
+
+            MessageBox.Show(i + " layers\n has been created succefully!");
+            RefreshDocNames();
+        }
     }
+    
 }
