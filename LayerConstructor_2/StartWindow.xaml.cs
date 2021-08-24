@@ -163,17 +163,7 @@ namespace LayersConstructor
                 Constructor constructor = new Constructor(this);
                 constructor.Show();
             }
-        }
-
-        private void Constructor_Closed1(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Constructor_Closed(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+        }       
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {

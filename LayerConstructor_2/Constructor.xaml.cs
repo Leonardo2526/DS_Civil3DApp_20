@@ -63,10 +63,18 @@ namespace LayersConstructor
             }
         }
 
-        private void EmptyFields()
+        private void CheckFields()
         {
+            int i = 0;
             foreach (var item in FieldsCodes)
-                item.Text = null;
+            {
+                if (item.Text == "")
+                {
+                    LayerCodesList[i] = "";
+                    LayerDescriptionsList[i] = "";
+                }
+                i++;
+            }
         }
 
         private void DocumentsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -78,7 +86,7 @@ namespace LayersConstructor
                 FieldsCodes[SelectedField - 1].Text = (DocumentsListBox.SelectedItem as LayerField).Code;
 
                 //Add values to arrays of layer code and description
-                LayerCodesList[SelectedField - 1] = (DocumentsListBox.SelectedItem as LayerField).Code;
+                LayerCodesList[SelectedField - 1] = FieldsCodes[SelectedField - 1].Text;
                 if (SelectedField != 1)
                     LayerDescriptionsList[SelectedField - 2] = (DocumentsListBox.SelectedItem as LayerField).Description;
             }
@@ -97,7 +105,7 @@ namespace LayersConstructor
             string LayerCode = LayerCodesList.Aggregate((i, j) => i + delimiter + j);
 
             string[] NewLayerDescriptionsList = new string[10];
-            NewLayerDescriptionsList = LayerDescriptionsList.Where(c => c != null).ToArray();
+            NewLayerDescriptionsList = LayerDescriptionsList.Where(c => c != null & c != "").ToArray();
             string LayerDescription = NewLayerDescriptionsList.Aggregate((i, j) => i + delimiter + j);
 
             if (IfNewNameExistInDB(LayerCode) == true)
@@ -148,18 +156,25 @@ namespace LayersConstructor
 
         private bool IfLayerCodeFormatCorrect()
         {
-            if (LayerCodesList[0] == null || LayerCodesList[1] == null)
-                return false;
+           
 
             int i = 0;
-            foreach (string item in LayerCodesList)
+            foreach (var item in FieldsCodes)
             {
-                if (item == null)
+                if (i ==  0 || i == 1 )
+                {
+                    if (item.Text == "")
+                        return false;
+                }
+                    
+                //Fill empty spaces
+                if (item.Text == null || item.Text == "")
                 {
                     if (i > 1 && i < 7 | i == 9)
                         LayerCodesList[i] = "____";
                     else
                         LayerCodesList[i] = "_";
+                    LayerDescriptionsList[i - 1] = "";
                 }
                 i++;
 
