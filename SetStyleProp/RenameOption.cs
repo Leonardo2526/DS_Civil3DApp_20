@@ -1,10 +1,12 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 namespace SetStyleProp
@@ -25,157 +27,44 @@ namespace SetStyleProp
             ObjectType = obt;
             MyStylesRoot = mstr;
         }
+        Main main = new Main();
+        
 
-        public void AddStyles()
+        public void SetLayer(Transaction ts, ObjectId sbid, Type tp, StyleBase stylebase)
         {
-            Main main = new Main();
-            main.AddStyleToList(StyleBase, PropInf, StyleList);
-            main.ListCollection(ObjectType, PropInf, MyStylesRoot, StyleList);
-        }
 
-        public void RenameStartWith()
-        {
-            char[] MyChar = { (char)42 };
-            string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
-
-            if (StyleBase.Name.StartsWith(trimmedName))
+            if (tp.Name == "SurfaceStyle")
             {
-                try
+                SurfaceStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceStyle;
+                //style.Description = "New description";
+
+                foreach (int typeName in Enum.GetValues(typeof(SurfaceDisplayStyleType)))
                 {
-                    if (StartForm.TrimOption == true)
+                    style.GetDisplayStyleSection();
+                    DisplayStyle displayStylePlan = style.GetDisplayStylePlan((SurfaceDisplayStyleType)typeName);
+                    DisplayStyle displayStyleModel = style.GetDisplayStyleModel((SurfaceDisplayStyleType)typeName);
+                    DisplayStyle displayStyleSection = style.GetDisplayStyleSection();
+
+                    string layerName = "NewLayer";
+
+                    if (IfLayerExist(layerName) == true)
                     {
-                        StyleBase.Name = StyleBase.Name.Remove(0, trimmedName.Length);
+                        displayStylePlan.Layer = layerName;
+                        displayStyleModel.Layer = layerName;
+                        displayStyleSection.Layer = layerName;
                     }
                     else
                     {
-                        string trimmedString = StyleBase.Name.Substring(trimmedName.Length);
-                        StyleBase.Name = StartForm.NewNameStyle + trimmedString;
+                        MessageBox.Show($"No '{layerName}' layer.");
+                        break;
                     }
-                    AddStyles();
+                   
                 }
+                main.AddStyleToList(StyleBase, PropInf, StyleList);
 
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
             }
-        }
-
-        public void RenameEndWith()
-        {
-            char[] MyChar = { (char)42 };
-            string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
-
-            if (StyleBase.Name.EndsWith(trimmedName))
-            {
-                try
-                {
-                    if (StartForm.TrimOption == true)
-                    {
-                        int startInd = StyleBase.Name.Length - trimmedName.Length;
-                        StyleBase.Name = StyleBase.Name.Remove(startInd, trimmedName.Length);
-                    }
-                    else
-                    {
-                        string trimmedString = StyleBase.Name.Substring(0, StyleBase.Name.Length - trimmedName.Length);
-                        StyleBase.Name = trimmedString + StartForm.NewNameStyle;
-                    }
-                    AddStyles();
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-        }
-
-        public void RenameContain()
-        {
-            char[] MyChar = { (char)42 };
-            string trimmedName = StartForm.OldNameStyle.Trim(MyChar);
-
-            if (StyleBase.Name.Contains(trimmedName))
-            {
-                try
-                {
-                    if (StartForm.TrimOption == true)
-                    {
-                        StyleBase.Name = StyleBase.Name.Replace(trimmedName, "");
-                    }
-                    else
-                    {
-                        string trimmedString = StyleBase.Name.Substring(trimmedName.Length);
-                        StyleBase.Name = StyleBase.Name.Replace(trimmedName, StartForm.NewNameStyle);
-                    }
-                    AddStyles();
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-        }
 
 
-        public void RenameAccurate()
-        {
-            if (StyleBase.Name == StartForm.OldNameStyle)
-            {
-                try
-                {
-                    StyleBase.Name = StartForm.NewNameStyle;
-
-                    AddStyles();
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-        }
-
-        public void AddToBegin()
-        {
-            if (!StyleBase.Name.StartsWith(StartForm.TextToAdd))
-            {
-                try
-                {
-                    StyleBase.Name = StartForm.TextToAdd + StyleBase.Name;
-
-                    AddStyles();
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-        }
-
-        public void AddToEnd()
-        {
-            if (!StyleBase.Name.EndsWith(StartForm.TextToAdd))
-            {
-                try
-                {
-                    StyleBase.Name += StartForm.TextToAdd;
-
-                    AddStyles();
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-        }
-
-        public void SetLayer()
-        {
-            StyleBase.Description = "New description";
 
             /*
             var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
@@ -194,6 +83,32 @@ namespace SetStyleProp
                 }
             }
             */
+        }
+
+        public bool IfLayerExist(string LayerName)
+        {
+            // Get the current document and database
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+            Database acCurDb = acDoc.Database;            
+
+            // Start a transaction
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                // Open the Layer table for read
+                LayerTable acLyrTbl;
+                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
+                                             OpenMode.ForRead) as LayerTable;
+                if (acLyrTbl.Has(LayerName) == true)
+                {
+                    return true;
+
+                    // Save the changes and dispose of the transaction
+                    acTrans.Commit();
+                }
+
+            }
+            return false;
+
         }
     }
 }

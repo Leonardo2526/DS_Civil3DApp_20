@@ -180,39 +180,13 @@ namespace SetStyleProp
                     StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
 
                     RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
-                    renameOption.SetLayer();
+                  
                 Type tp = stylebase.GetType();
-                if (tp.Name == "SurfaceStyle")
-                {
-                    SurfaceStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceStyle;
-                    style.GetDisplayStylePlan(SurfaceDisplayStyleType.Boundary);
 
-                    DisplayStyle displayStyleMiddleAxisTitle = style.GetDisplayStylePlan(SurfaceDisplayStyleType.Boundary);
-                    displayStyleMiddleAxisTitle.Layer = "NewLayer";
-                }
-                
+                renameOption.SetLayer(ts, sbid, tp, stylebase);
 
-                /*
-                    if (StartForm.ExportStyles == true)
-                        AddStyleToList(stylebase, pf, styleList);
 
-                    //Check rename options
-                    if (StartForm.RenameOption == true)
-                    {
-                        if (StartForm.OldNameStyle.EndsWith("*") && StartForm.OldNameStyle.StartsWith("*"))
-                            renameOption.RenameContain();
-                        else if (StartForm.OldNameStyle.StartsWith("*"))
-                            renameOption.RenameEndWith();
-                        else if (StartForm.OldNameStyle.EndsWith("*"))
-                            renameOption.RenameStartWith();
-                        else
-                            renameOption.RenameAccurate();
-                    }
-                    if (StartForm.TextToAdd != "" && StartForm.AddTxtToBegin == true)
-                        renameOption.AddToBegin();
-                    else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
-                        renameOption.AddToEnd();
-                */
+               
             }
 
 
