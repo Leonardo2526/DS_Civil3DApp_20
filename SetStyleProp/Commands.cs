@@ -11,8 +11,7 @@ namespace SetStyleProp
         /// 
         public void Initialize()
         {
-            StartForm startForm = new StartForm();
-            startForm.ShowDialog();
+            
         }
 
         [CommandMethod("DS_SetStyleProp")]

@@ -1,6 +1,8 @@
-﻿using Autodesk.Civil.DatabaseServices.Styles;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.Civil.DatabaseServices.Styles;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Exception = Autodesk.AutoCAD.Runtime.Exception;
@@ -169,6 +171,29 @@ namespace SetStyleProp
                     MessageBox.Show(ex.ToString());
                 }
             }
+        }
+
+        public void SetLayer()
+        {
+            StyleBase.Description = "New description";
+
+            /*
+            var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
+            // run through the collection of methods
+            foreach (MethodInfo method in methods)
+            {
+                if (method.GetParameters().Length != 1) continue; // if not 1, then we don't know
+                ParameterInfo param = method.GetParameters()[0];
+                if (!param.ParameterType.IsEnum) continue; // not a enum, skip
+                                                           // check all values on the enum
+                foreach (var enumValue in Enum.GetValues(param.ParameterType))
+                {
+                    DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] { enumValue }) as DisplayStyle;
+                    if (dispStyle == null) continue;// something went wrong
+                    layers.Add(dispStyle.Layer); // get the layer name
+                }
+            }
+            */
         }
     }
 }

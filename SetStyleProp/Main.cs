@@ -180,6 +180,19 @@ namespace SetStyleProp
                     StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
 
                     RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
+                    renameOption.SetLayer();
+                Type tp = stylebase.GetType();
+                if (tp.Name == "SurfaceStyle")
+                {
+                    SurfaceStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceStyle;
+                    style.GetDisplayStylePlan(SurfaceDisplayStyleType.Boundary);
+
+                    DisplayStyle displayStyleMiddleAxisTitle = style.GetDisplayStylePlan(SurfaceDisplayStyleType.Boundary);
+                    displayStyleMiddleAxisTitle.Layer = "NewLayer";
+                }
+                
+
+                /*
                     if (StartForm.ExportStyles == true)
                         AddStyleToList(stylebase, pf, styleList);
 
@@ -199,8 +212,9 @@ namespace SetStyleProp
                         renameOption.AddToBegin();
                     else if (StartForm.TextToAdd != "" && StartForm.AddTxtToEnd == true)
                         renameOption.AddToEnd();
-                }
-          
+                */
+            }
+
 
         }
 
