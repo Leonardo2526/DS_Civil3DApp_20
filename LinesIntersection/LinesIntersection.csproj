@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LinesIntersection</RootNamespace>
-    <AssemblyName>LinesIntersection</AssemblyName>
+    <AssemblyName>DS.LinesIntersection_v1.0</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
