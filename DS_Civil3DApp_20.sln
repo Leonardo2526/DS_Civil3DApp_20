@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinesIntersection", "LinesI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LayerConstructor", "LayerConstructor_2\LayerConstructor.csproj", "{58724D68-5B3E-4558-ABA2-1C2B98E3886A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetStyleProp", "SetStyleProp\SetStyleProp.csproj", "{6A4F914E-EF71-4FF0-B887-959486FBE9FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{58724D68-5B3E-4558-ABA2-1C2B98E3886A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58724D68-5B3E-4558-ABA2-1C2B98E3886A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58724D68-5B3E-4558-ABA2-1C2B98E3886A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
