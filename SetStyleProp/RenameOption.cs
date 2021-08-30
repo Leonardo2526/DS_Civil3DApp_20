@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
@@ -38,6 +39,34 @@ namespace SetStyleProp
                 return;
             }
 
+
+            var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
+            if (tp.Name.Contains("TableStyle") | tp.Name.Contains("Intersection"))
+                return;
+            if (methods == null)
+                return;
+
+            // run through the collection of methods
+            foreach (MethodInfo method in methods)
+            {
+                if (method.GetParameters().Length != 1) continue; // if not 1, then we don't know
+                ParameterInfo param = method.GetParameters()[0];
+                if (!param.ParameterType.IsEnum) continue; // not a enum, skip
+                                                           // check all values on the enum
+                Array array2 = Enum.GetValues(param.ParameterType);
+
+                foreach (var enumValue in Enum.GetValues(param.ParameterType))
+                {
+                    DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] { enumValue }) as DisplayStyle;
+                    if (dispStyle == null) continue;// something went wrong
+
+                    dispStyle.Layer = layerName;
+                }
+            }
+            stylebase.Description = layerName;
+            main.AddStyleToList(StyleBase, PropInf, StyleList);
+
+            /*
             if (tp.Name == "SurfaceStyle")
             {
                 SurfaceStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceStyle;
@@ -57,7 +86,7 @@ namespace SetStyleProp
 
                 main.AddStyleToList(StyleBase, PropInf, StyleList);
             }
-
+            */
 
 
             /*
