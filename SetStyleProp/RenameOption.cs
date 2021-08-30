@@ -3,11 +3,9 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using System;
 using System.Collections;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
-using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 namespace SetStyleProp
 {
@@ -28,15 +26,22 @@ namespace SetStyleProp
             MyStylesRoot = mstr;
         }
         Main main = new Main();
-        
+
 
         public void SetLayer(Transaction ts, ObjectId sbid, Type tp, StyleBase stylebase)
         {
+            string layerName = "NewLayer";
+
+            if (IfLayerExist(layerName) == false)
+            {
+                MessageBox.Show($"No '{layerName}' layer.");
+                return;
+            }
 
             if (tp.Name == "SurfaceStyle")
             {
                 SurfaceStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceStyle;
-                //style.Description = "New description";
+                style.Description = "New description";
 
                 foreach (int typeName in Enum.GetValues(typeof(SurfaceDisplayStyleType)))
                 {
@@ -45,23 +50,12 @@ namespace SetStyleProp
                     DisplayStyle displayStyleModel = style.GetDisplayStyleModel((SurfaceDisplayStyleType)typeName);
                     DisplayStyle displayStyleSection = style.GetDisplayStyleSection();
 
-                    string layerName = "NewLayer";
-
-                    if (IfLayerExist(layerName) == true)
-                    {
-                        displayStylePlan.Layer = layerName;
-                        displayStyleModel.Layer = layerName;
-                        displayStyleSection.Layer = layerName;
-                    }
-                    else
-                    {
-                        MessageBox.Show($"No '{layerName}' layer.");
-                        break;
-                    }
-                   
+                    displayStylePlan.Layer = layerName;
+                    displayStyleModel.Layer = layerName;
+                    displayStyleSection.Layer = layerName;
                 }
-                main.AddStyleToList(StyleBase, PropInf, StyleList);
 
+                main.AddStyleToList(StyleBase, PropInf, StyleList);
             }
 
 
@@ -89,7 +83,7 @@ namespace SetStyleProp
         {
             // Get the current document and database
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;            
+            Database acCurDb = acDoc.Database;
 
             // Start a transaction
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())

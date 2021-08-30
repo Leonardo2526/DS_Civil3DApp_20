@@ -38,18 +38,18 @@ namespace SetStyleProp
                 }
             }
             if (styleList.Count == 0)
-                MessageBox.Show("No styles has been found with such names!");
+                MessageBox.Show("No styles has been changed!");
             else
             {
                 if (StartForm.ExportStyles == true)
                 {
-                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been found.");
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been changed.");
                     WriteToExcel(styleList);
                     MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
                 }
                 else
                 {
-                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been renamed.");
+                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been changed.");
                     WriteToLog(styleList);
                 }
 
@@ -184,9 +184,10 @@ namespace SetStyleProp
                 Type tp = stylebase.GetType();
 
                 renameOption.SetLayer(ts, sbid, tp, stylebase);
+                //stylebase.Description = "0";
 
 
-               
+
             }
 
 
