@@ -18,7 +18,6 @@ namespace LayersConstructor
 {
     class Collection
     {
-        public static string CurrentColName;
 
 
         // must be a property! This is your instance...
