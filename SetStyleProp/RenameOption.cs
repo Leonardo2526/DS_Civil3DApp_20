@@ -31,7 +31,7 @@ namespace SetStyleProp
 
         public void SetLayer(Transaction ts, ObjectId sbid, Type tp, StyleBase stylebase)
         {
-            string layerName = "NewLayer";
+            string layerName = "Defpoints";
 
             if (IfLayerExist(layerName) == false)
             {
@@ -39,32 +39,45 @@ namespace SetStyleProp
                 return;
             }
 
+            
+                var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
+                if (tp.Name.Contains("TableStyle"))
+                    return;
+                if (methods == null)
+                    return;
 
-            var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
-            if (tp.Name.Contains("TableStyle") | tp.Name.Contains("Intersection"))
-                return;
-            if (methods == null)
-                return;
-
-            // run through the collection of methods
-            foreach (MethodInfo method in methods)
-            {
-                if (method.GetParameters().Length != 1) continue; // if not 1, then we don't know
-                ParameterInfo param = method.GetParameters()[0];
-                if (!param.ParameterType.IsEnum) continue; // not a enum, skip
-                                                           // check all values on the enum
-                Array array2 = Enum.GetValues(param.ParameterType);
-
-                foreach (var enumValue in Enum.GetValues(param.ParameterType))
+                // run through the collection of methods
+                foreach (MethodInfo method in methods)
                 {
-                    DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] { enumValue }) as DisplayStyle;
-                    if (dispStyle == null) continue;// something went wrong
+                    int pl = method.GetParameters().Length;
+                    //if (method.GetParameters().Length != 1) continue; // if not 1, then we don't know                   
+                    if (method.GetParameters().Length != 0)
+                    {
+                        ParameterInfo param = method.GetParameters()[0];
 
-                    dispStyle.Layer = layerName;
+                        if (!param.ParameterType.IsEnum) continue; // not a enum, skip
+                                                                   // check all values on the enum
+                                                                   // 
+                        foreach (var enumValue in Enum.GetValues(param.ParameterType))
+                        {
+                            DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] { enumValue }) as DisplayStyle;
+                            if (dispStyle == null) continue;// something went wrong
+
+                            dispStyle.Layer = layerName;
+                        }
+                    }
+                    else
+                    {
+                            DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] {  }) as DisplayStyle;
+                            if (dispStyle == null) continue;// something went wrong
+
+                            dispStyle.Layer = layerName;
+                    }
                 }
-            }
-            stylebase.Description = layerName;
-            main.AddStyleToList(StyleBase, PropInf, StyleList);
+                stylebase.Description = layerName;
+                main.AddStyleToList(StyleBase, PropInf, StyleList);
+            
+          
 
             /*
             if (tp.Name == "SurfaceStyle")
