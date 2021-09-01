@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.ApplicationServices;
+using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using DS_SystemTools;
 using System;
@@ -33,7 +34,6 @@ namespace SetStyleProp
                 {
                     CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
                     ListRoot(CivilDoc.Styles, styleList);
-
                     ts.Commit();
                 }
             }
@@ -183,12 +183,41 @@ namespace SetStyleProp
                   
                 Type tp = stylebase.GetType();
 
-                renameOption.SetLayer(ts, sbid, tp, stylebase);
-                //stylebase.Description = "0";
+                renameOption.SetLayer(tp);
+
+                /*
+                LabelStylesRoot lab = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as LabelStylesRoot;
+
+                lab.Properties. = "";
 
 
+                ObjectIdCollection labelStyleBase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as LabelStyleBase;
+
+                ObjectIdCollection labelStyleBase = lab.Get;
+
+                var newLineComponent = ts.GetObject(sbid, OpenMode.ForWrite) as LabelStyleLineComponent;
+                newLineComponent.General.;
+                */
+                if (stylebase.Name.Contains("111"))
+                {
+                    try
+                    {
+                        SurfaceElevationLabel style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceElevationLabel;
+                        style.Layer = "Defpoints";
+                    }
+
+
+                    catch
+                    {
+                        continue;
+                    }
+                    
+
+                }
 
             }
+
+
 
 
         }

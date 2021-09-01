@@ -29,7 +29,7 @@ namespace SetStyleProp
         Main main = new Main();
 
 
-        public void SetLayer(Transaction ts, ObjectId sbid, Type tp, StyleBase stylebase)
+        public void SetLayer(Type tp)
         {
             string layerName = "Defpoints";
 
@@ -39,13 +39,13 @@ namespace SetStyleProp
                 return;
             }
 
-            
+           
                 var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
                 if (tp.Name.Contains("TableStyle"))
                     return;
                 if (methods == null)
                     return;
-
+            
                 // run through the collection of methods
                 foreach (MethodInfo method in methods)
                 {
@@ -74,11 +74,14 @@ namespace SetStyleProp
                             dispStyle.Layer = layerName;
                     }
                 }
-                stylebase.Description = layerName;
-                main.AddStyleToList(StyleBase, PropInf, StyleList);
-            
-          
 
+                StyleBase.Description = layerName;
+                main.AddStyleToList(StyleBase, PropInf, StyleList);
+
+
+            
+           
+            
             /*
             if (tp.Name == "SurfaceStyle")
             {
@@ -102,23 +105,6 @@ namespace SetStyleProp
             */
 
 
-            /*
-            var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
-            // run through the collection of methods
-            foreach (MethodInfo method in methods)
-            {
-                if (method.GetParameters().Length != 1) continue; // if not 1, then we don't know
-                ParameterInfo param = method.GetParameters()[0];
-                if (!param.ParameterType.IsEnum) continue; // not a enum, skip
-                                                           // check all values on the enum
-                foreach (var enumValue in Enum.GetValues(param.ParameterType))
-                {
-                    DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] { enumValue }) as DisplayStyle;
-                    if (dispStyle == null) continue;// something went wrong
-                    layers.Add(dispStyle.Layer); // get the layer name
-                }
-            }
-            */
         }
 
         public bool IfLayerExist(string LayerName)
