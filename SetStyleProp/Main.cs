@@ -185,25 +185,12 @@ namespace SetStyleProp
 
                 renameOption.SetLayer(tp);
 
-                /*
-                LabelStylesRoot lab = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as LabelStylesRoot;
-
-                lab.Properties. = "";
-
-
-                ObjectIdCollection labelStyleBase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as LabelStyleBase;
-
-                ObjectIdCollection labelStyleBase = lab.Get;
-
-                var newLineComponent = ts.GetObject(sbid, OpenMode.ForWrite) as LabelStyleLineComponent;
-                newLineComponent.General.;
-                */
                 if (stylebase.Name.Contains("111"))
                 {
                     try
                     {
-                        SurfaceElevationLabel style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceElevationLabel;
-                        style.Layer = "Defpoints";
+                        LabelStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as LabelStyle;
+                        style.Properties.Label.Layer.Value = "Defpoints";
                     }
 
 

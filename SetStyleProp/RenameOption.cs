@@ -77,34 +77,6 @@ namespace SetStyleProp
 
                 StyleBase.Description = layerName;
                 main.AddStyleToList(StyleBase, PropInf, StyleList);
-
-
-            
-           
-            
-            /*
-            if (tp.Name == "SurfaceStyle")
-            {
-                SurfaceStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as SurfaceStyle;
-                style.Description = "New description";
-
-                foreach (int typeName in Enum.GetValues(typeof(SurfaceDisplayStyleType)))
-                {
-                    style.GetDisplayStyleSection();
-                    DisplayStyle displayStylePlan = style.GetDisplayStylePlan((SurfaceDisplayStyleType)typeName);
-                    DisplayStyle displayStyleModel = style.GetDisplayStyleModel((SurfaceDisplayStyleType)typeName);
-                    DisplayStyle displayStyleSection = style.GetDisplayStyleSection();
-
-                    displayStylePlan.Layer = layerName;
-                    displayStyleModel.Layer = layerName;
-                    displayStyleSection.Layer = layerName;
-                }
-
-                main.AddStyleToList(StyleBase, PropInf, StyleList);
-            }
-            */
-
-
         }
 
         public bool IfLayerExist(string LayerName)
