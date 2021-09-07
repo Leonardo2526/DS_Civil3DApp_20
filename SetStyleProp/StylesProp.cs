@@ -14,19 +14,18 @@ namespace SetStyleProp
     {
         readonly ObjectId ObId;
         readonly PropertyInfo PropInf;
-        readonly ArrayList StyleList;
         readonly Type ObjectType;
         readonly object MyStylesRoot;
+        readonly ArrayList ChangedStylesList;
 
-        public StylesProp(ObjectId obID, PropertyInfo pf, ArrayList stl, Type obt, object mstr)
+        public StylesProp(ObjectId obID, PropertyInfo pf, Type obt, ArrayList changedStylesList)
         {
             ObId = obID;
             PropInf = pf;
-            StyleList = stl;
             ObjectType = obt;
-            MyStylesRoot = mstr;
+            ChangedStylesList = changedStylesList;
         }
-        Main main = new Main();
+        //Main main = new Main();
 
 
         public void SetLayerToStyle()
@@ -81,28 +80,28 @@ namespace SetStyleProp
 
                 acTrans.Commit();
 
-                main.AddStyleToList(stylebase, PropInf, StyleList);
+                AddToChangedStylesList(stylebase);
+
             }
         }
 
         public void SetLayerToLabelStyle()
         {
-            if (ObjectType.Name.Contains("LabelStyle"))
-            {
                 try
                 {
                     using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
                     {
-                        LabelStyle style = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
-                        style.Properties.Label.Layer.Value = "Defpoints";
+                        LabelStyle labelStyle = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
+                        labelStyle.Properties.Label.Layer.Value = "Defpoints";
                         acTrans.Commit();
+
+                        AddToChangedLabelStylesList(labelStyle);
                     }
                 }
                 catch (Exception Ex)
                 {
                     MessageBox.Show(Ex.ToString());
                 }
-            }
         }
 
         public bool IfLayerExist(string LayerName)
@@ -124,5 +123,36 @@ namespace SetStyleProp
             return false;
 
         }
+      
+        void AddToChangedStylesList(StyleBase stylebase)
+        // Add the style name and parameters to the list of changed styles
+        {
+
+            StyleInfo styleinfo = new StyleInfo
+            {
+                parent = PropInf.Name,
+                name = stylebase.Name,
+                type = stylebase.GetType().ToString()
+            };
+
+            ChangedStylesList.Add(styleinfo);
+        }
+
+        void AddToChangedLabelStylesList(LabelStyle labelStyle)
+        // Add the label style name and parameters to the list of changed styles
+        {
+
+            StyleInfo styleinfo = new StyleInfo
+            {
+                parent = PropInf.Name,
+                name = labelStyle.Name,
+                type = labelStyle.GetType().ToString()
+            };
+
+            ChangedStylesList.Add(styleinfo);
+        }
+
+
+
     }
 }

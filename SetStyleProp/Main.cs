@@ -21,37 +21,27 @@ namespace SetStyleProp
         DocumentLock docLck = doc.LockDocument();
         public static Database docCurDb = doc.Database;
 
+        public ArrayList ChangedStylesList = new ArrayList();
+
+
         public void GetStyles()
         {
-
-            ArrayList styleList = new ArrayList();
-
-
             using (docLck)
             {
-                using (ts = doc.Database.TransactionManager.StartTransaction())
-                {
                     CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
-                    ListRoot(CivilDoc.Styles, styleList);
-                    ts.Commit();
-                }
+                    ListRoot(CivilDoc.Styles);
             }
-            if (styleList.Count == 0)
+
+            //Output to Excel and txt
+            if (ChangedStylesList.Count == 0)
                 MessageBox.Show("No styles has been changed!");
             else
             {
-                Output output = new Output();
-                if (StartForm.ExportStyles == true)
-                {
-                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been changed.");
-                    output.WriteToExcel(styleList);
-                    MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
-                }
-                else
-                {
-                    MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been changed.");
-                    output.WriteToLog(styleList);
-                }
+                Output output = new Output(ChangedStylesList);             
+                    output.WriteToExcel();
+                    //output.WriteToLog();
+                MessageBox.Show("Completed successfully! \n" + ChangedStylesList.Count + " styles have been changed.");
+                MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
 
             }
         }
@@ -62,7 +52,7 @@ namespace SetStyleProp
         ///  collections (derived from StyleBaseCollection), or other style root objects.
         /// </summary>
         /// <param name="root">The style root object to look at.</param>
-        private void ListRoot(object root, ArrayList styleList)
+        private void ListRoot(object root)
         {
             // Get all the properties
             Type objectType = root.GetType();
@@ -73,7 +63,7 @@ namespace SetStyleProp
 
                 // If it's a collection, let's iterate through it
                 if (pf.PropertyType.ToString().Contains("Collection") && pf.Name != "PointCloudStyles")
-                    ListCollection(objectType, pf, root, styleList);
+                    ListCollection(objectType, pf, root);
                 else if (pf.PropertyType.ToString().Contains("Root"))
                 {
                     // Call ourselves recursively on this style root object                    
@@ -81,7 +71,7 @@ namespace SetStyleProp
                             BindingFlags.GetProperty, null, root, new object[0]);
                     if (root2.Equals(null))
                         return;
-                    ListRoot(root2, styleList);
+                    ListRoot(root2);
                 }
                 else if (pf.PropertyType.ToString().Contains("Default"))
                 {
@@ -102,7 +92,7 @@ namespace SetStyleProp
         /// <param name="objectType"></param>
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
-        public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
+        public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot)
         {
             object res = objectType.InvokeMember(pf.Name,
                         BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
@@ -116,67 +106,13 @@ namespace SetStyleProp
 
             foreach (ObjectId obID in scBase)
             {
-                StylesProp stylesProp = new StylesProp(obID, pf, styleList, objectType, myStylesRoot);
-                stylesProp.SetLayerToStyle();
+                StylesProp stylesProp = new StylesProp(obID, pf, objectType, ChangedStylesList);
+
+                if (!objectType.Name.Contains("LabelStyle"))                
+                    stylesProp.SetLayerToStyle();
+                else
                 stylesProp.SetLayerToLabelStyle();
             }
-        }
-
-        public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
-        {
-            // Add the style name and parameters to the list of all styles
-            StyleInfo styleinfo = new StyleInfo();
-            styleinfo.name = stylebase.Name;
-            styleinfo.type = stylebase.GetType().ToString();
-
-            // Get all the properties
-            Type styleType = stylebase.GetType();
-            PropertyInfo[] properties = styleType.GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
-
-            foreach (PropertyInfo stylePropInfo in properties)
-            {
-                object styleprop = null;
-
-                if (stylePropInfo.Name.Contains("Application") || stylePropInfo.Name.Contains("Document"))
-                {
-                    styleinfo.paramValues.Add(stylePropInfo.Name, "Not implemented");
-                    return;
-                }
-
-                try
-                {
-                    styleprop = styleType.InvokeMember(stylePropInfo.Name,
-                            BindingFlags.GetProperty, null, stylebase, new object[0]);
-
-                    // For object ID values, we need to get the target style base
-                    // and record the name.
-                    if (styleprop.GetType().Name == "ObjectId")
-                    {
-                        ObjectId objid = (ObjectId)styleprop;
-                        StyleBase proptarget = ts.GetObject(objid, OpenMode.ForRead) as StyleBase;
-                        styleprop = proptarget.Name;
-                    }
-                }
-                catch (System.Reflection.TargetInvocationException)
-                {
-                    // Should do something
-                    styleprop = "NULL";
-                }
-                catch (System.Exception)
-                {
-                    styleprop = "NULL";
-                }
-
-                if (!styleinfo.paramValues.ContainsKey(stylePropInfo.Name))
-                {
-                    styleinfo.paramValues.Add(stylePropInfo.Name, styleprop.ToString());
-                }
-
-            }
-
-            styleinfo.parent = pf.Name;
-
-            styleList.Add(styleinfo);
         }
 
     }
