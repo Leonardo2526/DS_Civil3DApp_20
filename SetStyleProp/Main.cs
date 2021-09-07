@@ -11,7 +11,6 @@ namespace SetStyleProp
 {
     class Main
     {
-        private static Transaction ts;
 
         //Get current date and time    
         readonly string CurDate = DateTime.Now.ToString("yyMMdd");
@@ -56,33 +55,29 @@ namespace SetStyleProp
         {
             // Get all the properties
             Type objectType = root.GetType();
-            PropertyInfo[] properties = objectType.GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+           
+                PropertyInfo[] properties = objectType.GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
 
-            foreach (PropertyInfo pf in properties)
-            {
-
-                // If it's a collection, let's iterate through it
-                if (pf.PropertyType.ToString().Contains("Collection") && pf.Name != "PointCloudStyles")
-                    ListCollection(objectType, pf, root);
-                else if (pf.PropertyType.ToString().Contains("Root"))
+                foreach (PropertyInfo pf in properties)
                 {
-                    // Call ourselves recursively on this style root object                    
-                    object root2 = objectType.InvokeMember(pf.Name,
-                            BindingFlags.GetProperty, null, root, new object[0]);
-                    if (root2.Equals(null))
-                        return;
-                    ListRoot(root2);
-                }
-                else if (pf.PropertyType.ToString().Contains("Default"))
-                {
-                    // A default type, just use the name
-                }
-                else
-                {
-                    // We're not sure what this is
+               
+                    // If it's a collection, let's iterate through it
+                    if (pf.PropertyType.ToString().Contains("Collection") && pf.Name != "PointCloudStyles")
+                        ListCollection(objectType, pf, root);
+                    else if (pf.PropertyType.ToString().Contains("Root"))
+                    {
+                        // Call ourselves recursively on this style root object                    
+                        object root2 = objectType.InvokeMember(pf.Name,
+                                BindingFlags.GetProperty, null, root, new object[0]);
+                        if (root2.Equals(null))
+                            return;
+                        ListRoot(root2);
+                    }
+                 
 
                 }
-            }
+           
+           
         }
 
         /// <summary>
@@ -106,12 +101,24 @@ namespace SetStyleProp
 
             foreach (ObjectId obID in scBase)
             {
-                StylesProp stylesProp = new StylesProp(obID, pf, objectType, ChangedStylesList);
+                using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
+                {
+                    StyleBase stylebase = acTrans.GetObject(obID, OpenMode.ForWrite, false, true) as StyleBase;
+                    Type styleType = stylebase.GetType();
 
-                if (!objectType.Name.Contains("LabelStyle"))                
-                    stylesProp.SetLayerToStyle();
-                else
-                stylesProp.SetLayerToLabelStyle();
+                    StylesProp stylesProp = new StylesProp(obID, pf, styleType, stylebase, ChangedStylesList);
+
+                    if (!styleType.Name.Contains("LabelStyle"))
+                            stylesProp.SetLayerToStyle();
+                    else 
+                        stylesProp.SetLayerToLabelStyle();
+
+                    acTrans.Commit();
+                }
+
+
+
+
             }
         }
 

@@ -15,18 +15,17 @@ namespace SetStyleProp
         readonly ObjectId ObId;
         readonly PropertyInfo PropInf;
         readonly Type ObjectType;
-        readonly object MyStylesRoot;
+        readonly StyleBase stylebase;
         readonly ArrayList ChangedStylesList;
 
-        public StylesProp(ObjectId obID, PropertyInfo pf, Type obt, ArrayList changedStylesList)
+        public StylesProp(ObjectId obID, PropertyInfo pf, Type obt, StyleBase stb, ArrayList changedStylesList)
         {
             ObId = obID;
             PropInf = pf;
             ObjectType = obt;
+            stylebase = stb;
             ChangedStylesList = changedStylesList;
         }
-        //Main main = new Main();
-
 
         public void SetLayerToStyle()
         {
@@ -37,71 +36,74 @@ namespace SetStyleProp
                 MessageBox.Show($"No '{layerName}' layer.");
                 return;
             }
-            using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
-            {
-                StyleBase stylebase = acTrans.GetObject(ObId, OpenMode.ForWrite, false, true) as StyleBase;
 
-                var methods = stylebase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
+          
+
+                var methods = ObjectType.GetMethods().Where(m => m.Name.Contains("Display"));
+
+                //Except null and bug methods
                 if (ObjectType.Name.Contains("TableStyle"))
                     return;
                 if (methods == null)
                     return;
 
+
                 // run through the collection of methods
                 foreach (MethodInfo method in methods)
                 {
                     int pl = method.GetParameters().Length;
-                    //if (method.GetParameters().Length != 1) continue; // if not 1, then we don't know                   
+
+                    //exclude methods without parameters
                     if (method.GetParameters().Length != 0)
                     {
                         ParameterInfo param = method.GetParameters()[0];
-
-                        if (!param.ParameterType.IsEnum) continue; // not a enum, skip
-                                                                   // check all values on the enum
-                                                                   // 
+                    
+                    if (!param.ParameterType.IsEnum) continue;
+                    
                         foreach (var enumValue in Enum.GetValues(param.ParameterType))
                         {
                             DisplayStyle dispStyle = method.Invoke(stylebase, new object[] { enumValue }) as DisplayStyle;
-                            if (dispStyle == null) continue;// something went wrong
 
+                            if (dispStyle == null) continue;
                             dispStyle.Layer = layerName;
                         }
                     }
+
+                    //include method without parameters: GetDisplayStyleSection
                     else
                     {
                         DisplayStyle dispStyle = method.Invoke(stylebase, new object[] { }) as DisplayStyle;
-                        if (dispStyle == null) continue;// something went wrong
 
+                        if (dispStyle == null) continue;
                         dispStyle.Layer = layerName;
                     }
+
                 }
+
 
                 stylebase.Description = layerName;
 
-                acTrans.Commit();
-
                 AddToChangedStylesList(stylebase);
-
-            }
+            
         }
 
         public void SetLayerToLabelStyle()
         {
-                try
+            try
+            {
+                using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
                 {
-                    using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
-                    {
-                        LabelStyle labelStyle = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
-                        labelStyle.Properties.Label.Layer.Value = "Defpoints";
-                        acTrans.Commit();
+                    LabelStyle labelStyle = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
+                    labelStyle.Properties.Label.Layer.Value = "Defpoints";
+                    acTrans.Commit();
 
-                        AddToChangedLabelStylesList(labelStyle);
-                    }
+                    AddToChangedLabelStylesList(labelStyle);
                 }
-                catch (Exception Ex)
-                {
-                    MessageBox.Show(Ex.ToString());
-                }
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show(Ex.ToString());
+            }
         }
 
         public bool IfLayerExist(string LayerName)
@@ -123,7 +125,7 @@ namespace SetStyleProp
             return false;
 
         }
-      
+
         void AddToChangedStylesList(StyleBase stylebase)
         // Add the style name and parameters to the list of changed styles
         {
@@ -132,7 +134,7 @@ namespace SetStyleProp
             {
                 parent = PropInf.Name,
                 name = stylebase.Name,
-                type = stylebase.GetType().ToString()
+                type = ObjectType.ToString()
             };
 
             ChangedStylesList.Add(styleinfo);
@@ -146,7 +148,7 @@ namespace SetStyleProp
             {
                 parent = PropInf.Name,
                 name = labelStyle.Name,
-                type = labelStyle.GetType().ToString()
+                type = ObjectType.ToString()
             };
 
             ChangedStylesList.Add(styleinfo);
