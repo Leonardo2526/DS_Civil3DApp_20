@@ -77,7 +77,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RenameOption.cs" />
+    <Compile Include="StylesProp.cs" />
+    <Compile Include="Output.cs" />
     <Compile Include="StyleInfo.cs" />
     <Compile Include="ExcelExport.cs" />
     <Compile Include="Main.cs" />

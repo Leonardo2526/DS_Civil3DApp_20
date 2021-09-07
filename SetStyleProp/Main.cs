@@ -1,15 +1,11 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.ApplicationServices;
-using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
-using DS_SystemTools;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
-using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 namespace SetStyleProp
 {
@@ -21,14 +17,17 @@ namespace SetStyleProp
         readonly string CurDate = DateTime.Now.ToString("yyMMdd");
         readonly string CurDateTime = DateTime.Now.ToString("yyMMdd_HHmmss");
 
+        public static Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+        DocumentLock docLck = doc.LockDocument();
+        public static Database docCurDb = doc.Database;
+
         public void GetStyles()
         {
 
             ArrayList styleList = new ArrayList();
-            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            DocumentLock acLckDoc = doc.LockDocument();
 
-            using (acLckDoc)
+
+            using (docLck)
             {
                 using (ts = doc.Database.TransactionManager.StartTransaction())
                 {
@@ -41,82 +40,22 @@ namespace SetStyleProp
                 MessageBox.Show("No styles has been changed!");
             else
             {
+                Output output = new Output();
                 if (StartForm.ExportStyles == true)
                 {
                     MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been changed.");
-                    WriteToExcel(styleList);
+                    output.WriteToExcel(styleList);
                     MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
                 }
                 else
                 {
                     MessageBox.Show("Completed successfully! \n" + styleList.Count + " styles have been changed.");
-                    WriteToLog(styleList);
+                    output.WriteToLog(styleList);
                 }
 
             }
         }
 
-        void WriteToLog(ArrayList styleList)
-        {
-            DS_Tools dS_Tools = new DS_Tools
-            {
-                DS_LogName = CurDateTime + "_StylesRename_Log.txt",
-                DS_LogOutputPath = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Desktop\Logs\")
-            };
-
-            dS_Tools.DS_StreamWriter("Styles updated: ");
-
-            try
-            {
-                //get type list without duplicates
-                List<string> typleList = new List<string>();
-                foreach (StyleInfo stf in styleList)
-                {
-                    if (!typleList.Contains(stf.type))
-                        typleList.Add(stf.type);
-                }
-
-                //Output to Log
-                foreach (string type in typleList)
-                {
-                    dS_Tools.DS_StreamWriter("\n" + type);
-                    foreach (StyleInfo st in styleList)
-                    {
-                        if (st.type == type)
-                            dS_Tools.DS_StreamWriter(st.name.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-
-            dS_Tools.DS_FileExistMessage();
-        }
-
-        void WriteToExcel(ArrayList styleList)
-        {
-            try
-            {
-                ExcelExport excelExport = new ExcelExport();
-                excelExport.StartExcel();
-
-                //write to sheet
-                int i = 1;
-                foreach (StyleInfo stf in styleList)
-                {
-                    i++;
-                    excelExport.WriteToSheet(i, stf.parent, stf.type, stf.name);
-                }
-                excelExport.SaveExcel();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-
-        }
 
         /// <summary>
         ///  Looks at a "root" object for styles.  Each root class contains a group of
@@ -164,49 +103,23 @@ namespace SetStyleProp
         /// <param name="pf"></param>
         /// <param name="myStylesRoot"></param>
         public void ListCollection(Type objectType, PropertyInfo pf, object myStylesRoot, ArrayList styleList)
-        {            
+        {
             object res = objectType.InvokeMember(pf.Name,
                         BindingFlags.GetProperty, null, myStylesRoot, new object[0]);
             if (res.Equals(null))
                 return;
 
-             StyleCollectionBase scBase = (StyleCollectionBase)res;          
+            StyleCollectionBase scBase = (StyleCollectionBase)res;
 
             if (scBase.Count == 0)
                 return;
 
-            foreach (ObjectId sbid in scBase)
-                {
-                    StyleBase stylebase = ts.GetObject(sbid, OpenMode.ForWrite, false, true) as StyleBase;
-
-                    RenameOption renameOption = new RenameOption(stylebase, pf, styleList, objectType, myStylesRoot);
-                  
-                Type tp = stylebase.GetType();
-
-                renameOption.SetLayer(tp);
-
-                if (stylebase.Name.Contains("111"))
-                {
-                    try
-                    {
-                        LabelStyle style = ts.GetObject(sbid, OpenMode.ForWrite) as LabelStyle;
-                        style.Properties.Label.Layer.Value = "Defpoints";
-                    }
-
-
-                    catch
-                    {
-                        continue;
-                    }
-                    
-
-                }
-
+            foreach (ObjectId obID in scBase)
+            {
+                StylesProp stylesProp = new StylesProp(obID, pf, styleList, objectType, myStylesRoot);
+                stylesProp.SetLayerToStyle();
+                stylesProp.SetLayerToLabelStyle();
             }
-
-
-
-
         }
 
         public void AddStyleToList(StyleBase stylebase, PropertyInfo pf, ArrayList styleList)
@@ -266,7 +179,7 @@ namespace SetStyleProp
             styleList.Add(styleinfo);
         }
 
-    }    
-   
+    }
+
 }
 

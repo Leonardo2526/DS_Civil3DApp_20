@@ -10,17 +10,17 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace SetStyleProp
 {
-    class RenameOption
+    class StylesProp
     {
-        readonly StyleBase StyleBase;
+        readonly ObjectId ObId;
         readonly PropertyInfo PropInf;
         readonly ArrayList StyleList;
         readonly Type ObjectType;
         readonly object MyStylesRoot;
 
-        public RenameOption(StyleBase stb, PropertyInfo pf, ArrayList stl, Type obt, object mstr)
+        public StylesProp(ObjectId obID, PropertyInfo pf, ArrayList stl, Type obt, object mstr)
         {
-            StyleBase = stb;
+            ObId = obID;
             PropInf = pf;
             StyleList = stl;
             ObjectType = obt;
@@ -29,7 +29,7 @@ namespace SetStyleProp
         Main main = new Main();
 
 
-        public void SetLayer(Type tp)
+        public void SetLayerToStyle()
         {
             string layerName = "Defpoints";
 
@@ -38,14 +38,16 @@ namespace SetStyleProp
                 MessageBox.Show($"No '{layerName}' layer.");
                 return;
             }
+            using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
+            {
+                StyleBase stylebase = acTrans.GetObject(ObId, OpenMode.ForWrite, false, true) as StyleBase;
 
-           
-                var methods = StyleBase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
-                if (tp.Name.Contains("TableStyle"))
+                var methods = stylebase.GetType().GetMethods().Where(m => m.Name.Contains("GetDisplay"));
+                if (ObjectType.Name.Contains("TableStyle"))
                     return;
                 if (methods == null)
                     return;
-            
+
                 // run through the collection of methods
                 foreach (MethodInfo method in methods)
                 {
@@ -60,7 +62,7 @@ namespace SetStyleProp
                                                                    // 
                         foreach (var enumValue in Enum.GetValues(param.ParameterType))
                         {
-                            DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] { enumValue }) as DisplayStyle;
+                            DisplayStyle dispStyle = method.Invoke(stylebase, new object[] { enumValue }) as DisplayStyle;
                             if (dispStyle == null) continue;// something went wrong
 
                             dispStyle.Layer = layerName;
@@ -68,15 +70,39 @@ namespace SetStyleProp
                     }
                     else
                     {
-                            DisplayStyle dispStyle = method.Invoke(StyleBase, new object[] {  }) as DisplayStyle;
-                            if (dispStyle == null) continue;// something went wrong
+                        DisplayStyle dispStyle = method.Invoke(stylebase, new object[] { }) as DisplayStyle;
+                        if (dispStyle == null) continue;// something went wrong
 
-                            dispStyle.Layer = layerName;
+                        dispStyle.Layer = layerName;
                     }
                 }
 
-                StyleBase.Description = layerName;
-                main.AddStyleToList(StyleBase, PropInf, StyleList);
+                stylebase.Description = layerName;
+
+                acTrans.Commit();
+
+                main.AddStyleToList(stylebase, PropInf, StyleList);
+            }
+        }
+
+        public void SetLayerToLabelStyle()
+        {
+            if (ObjectType.Name.Contains("LabelStyle"))
+            {
+                try
+                {
+                    using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
+                    {
+                        LabelStyle style = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
+                        style.Properties.Label.Layer.Value = "Defpoints";
+                        acTrans.Commit();
+                    }
+                }
+                catch (Exception Ex)
+                {
+                    MessageBox.Show(Ex.ToString());
+                }
+            }
         }
 
         public bool IfLayerExist(string LayerName)
@@ -93,13 +119,7 @@ namespace SetStyleProp
                 acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
                                              OpenMode.ForRead) as LayerTable;
                 if (acLyrTbl.Has(LayerName) == true)
-                {
                     return true;
-
-                    // Save the changes and dispose of the transaction
-                    acTrans.Commit();
-                }
-
             }
             return false;
 
