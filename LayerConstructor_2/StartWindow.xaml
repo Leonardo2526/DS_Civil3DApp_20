@@ -82,6 +82,9 @@
             <Button x:Name="Delete" Style="{StaticResource DS_Button}" Click="Delete_Click">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center">Delete from DB</TextBlock>
             </Button>
+            <Button x:Name="SetStylesProp" Style="{StaticResource DS_Button}" Click="SetStylesProp_Click" >
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Set properties for Civil3D styles</TextBlock>
+            </Button>
         </StackPanel>
 
     </Grid>

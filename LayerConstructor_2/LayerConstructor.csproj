@@ -66,6 +66,11 @@
     <Reference Include="DS_MainTools_Net_FW_4.7.2">
       <HintPath>..\StylesRename\bin\Debug\DS_MainTools_Net_FW_4.7.2.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Program Files\Common Files\Autodesk Shared\Extensions 2020\Framework\Interop\Microsoft.Office\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.13.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.13.1\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -154,6 +159,11 @@
     <Compile Include="Log.cs" />
     <Compile Include="Models\LayerField.cs" />
     <Compile Include="Models\MyObject.cs" />
+    <Compile Include="SetStyleProp\ExcelExport.cs" />
+    <Compile Include="SetStyleProp\Main.cs" />
+    <Compile Include="SetStyleProp\Output.cs" />
+    <Compile Include="SetStyleProp\StyleInfo.cs" />
+    <Compile Include="SetStyleProp\StylesProp.cs" />
     <Compile Include="StartWindow.xaml.cs">
       <DependentUpon>StartWindow.xaml</DependentUpon>
     </Compile>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using SetStyleProp;
 
 namespace LayersConstructor
 {
@@ -224,8 +225,10 @@ namespace LayersConstructor
             }
         }
 
-       
-
-
+        private void SetStylesProp_Click(object sender, RoutedEventArgs e)
+        {
+            Main main = new Main();
+            main.GetStyles();
+        }
     }
 }
