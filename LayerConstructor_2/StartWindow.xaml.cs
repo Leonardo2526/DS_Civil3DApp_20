@@ -125,7 +125,7 @@ namespace LayersConstructor
         }
 
 
-        public FullPropCollection Codes { get; set; } = new FullPropCollection();
+        public LayersFieldsCollection Codes { get; set; } = new LayersFieldsCollection();
 
         public void RefreshDocNames()
         //Get all documents names
@@ -227,7 +227,7 @@ namespace LayersConstructor
 
         private void SetStylesProp_Click(object sender, RoutedEventArgs e)
         {
-            Main main = new Main();
+            Main main = new Main(CurrentDBName, database);
             main.GetStyles();
         }
     }

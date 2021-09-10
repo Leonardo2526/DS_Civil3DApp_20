@@ -7,6 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using ObjectId = Autodesk.AutoCAD.DatabaseServices.ObjectId;
 
 namespace SetStyleProp
 {
@@ -17,17 +20,20 @@ namespace SetStyleProp
         readonly Type ObjectType;
         readonly StyleBase stylebase;
         readonly ArrayList ChangedStylesList;
+        readonly IMongoDatabase Database;
 
-        public StylesProp(ObjectId obID, PropertyInfo pf, Type obt, StyleBase stb, ArrayList changedStylesList)
+        public StylesProp(ObjectId obID, PropertyInfo pf, Type obt, StyleBase stb, ArrayList changedStylesList, 
+            IMongoDatabase db)
         {
             ObId = obID;
             PropInf = pf;
             ObjectType = obt;
             stylebase = stb;
             ChangedStylesList = changedStylesList;
+            Database = db;
         }
 
-        public void SetLayerToStyle()
+        public void SetLayerToStyle(string LayerCode)
         {
             string layerName = "Defpoints";
 
@@ -47,6 +53,8 @@ namespace SetStyleProp
             if (methods == null)
                 return;
 
+            
+            Mongo mongo = new Mongo(Database, LayerCode);
 
             // run through the collection of methods
             foreach (MethodInfo method in methods)
@@ -79,22 +87,22 @@ namespace SetStyleProp
                 }
 
             }
-
-
-            stylebase.Description = layerName;
-
+            stylebase.Description = mongo.GetDescription();
             AddToChangedStylesList(stylebase);
 
         }
 
-        public void SetLayerToLabelStyle()
+        public void SetLayerToLabelStyle(string LayerCode)
         {
+            Mongo mongo = new Mongo(Database, LayerCode);
+
             try
             {
                 using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
                 {
                     LabelStyle labelStyle = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
                     labelStyle.Properties.Label.Layer.Value = "Defpoints";
+                    labelStyle.Description = mongo.GetDescription();
                     acTrans.Commit();
 
                     AddToChangedLabelStylesList(labelStyle);
@@ -155,6 +163,6 @@ namespace SetStyleProp
         }
 
 
-
+       
     }
 }

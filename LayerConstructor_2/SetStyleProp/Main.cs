@@ -4,13 +4,19 @@ using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using ObjectId = Autodesk.AutoCAD.DatabaseServices.ObjectId;
 
 namespace SetStyleProp
 {
     class Main
     {
+        string CurrentDBName;
+        readonly IMongoDatabase Database;
 
         //Get current date and time    
         readonly string CurDate = DateTime.Now.ToString("yyMMdd");
@@ -22,9 +28,21 @@ namespace SetStyleProp
 
         public ArrayList ChangedStylesList = new ArrayList();
 
+        public Main(string cDBName, IMongoDatabase db)
+        {
+            CurrentDBName = cDBName;
+            Database = db;
+        }
 
         public void GetStyles()
         {
+            //Check chosed db and colletion
+            if (CurrentDBName == "")
+            {
+                MessageBox.Show("Select database!");
+                    return;
+            }          
+
             using (docLck)
             {
                 CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
@@ -101,26 +119,36 @@ namespace SetStyleProp
 
             foreach (ObjectId obID in scBase)
             {
+                List<string> NameFields = new List<string>();
+
                 using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
                 {
                     StyleBase stylebase = acTrans.GetObject(obID, OpenMode.ForWrite, false, true) as StyleBase;
                     Type styleType = stylebase.GetType();
 
-                    StylesProp stylesProp = new StylesProp(obID, pf, styleType, stylebase, ChangedStylesList);
+                    StylesProp stylesProp = 
+                        new StylesProp(obID, pf, styleType, stylebase, ChangedStylesList, Database);
+                    string LayerCode = "АД_";
 
                     if (!styleType.Name.Contains("LabelStyle"))
-                        stylesProp.SetLayerToStyle();
+                        stylesProp.SetLayerToStyle(LayerCode);
                     else
-                        stylesProp.SetLayerToLabelStyle();
+                        stylesProp.SetLayerToLabelStyle(LayerCode);
 
                     acTrans.Commit();
                 }
-
-
-
-
             }
         }
+
+
+        void SplitStyleName(string styleName, List<string> NameFields)
+        {
+
+
+            styleName.Split();
+        }
+
+
 
     }
 

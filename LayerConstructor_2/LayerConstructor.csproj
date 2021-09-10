@@ -159,6 +159,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="Models\LayerField.cs" />
     <Compile Include="Models\MyObject.cs" />
+    <Compile Include="Mongo\Mongo.cs" />
     <Compile Include="SetStyleProp\ExcelExport.cs" />
     <Compile Include="SetStyleProp\Main.cs" />
     <Compile Include="SetStyleProp\Output.cs" />
@@ -168,7 +169,6 @@
       <DependentUpon>StartWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\LayersFieldsCollection.cs" />
-    <Compile Include="ViewModels\FullPropCollection.cs" />
     <Compile Include="ViewModels\NamesCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -186,12 +186,12 @@
     <Content Include="Core\Compression\Snappy\lib\win\snappy32.dll" />
     <Content Include="Core\Compression\Snappy\lib\win\snappy64.dll" />
     <Content Include="Core\Compression\Zstandard\lib\win\libzstd.dll" />
-    <Content Include="mongocrypt.dll" />
+    <Content Include="Mongo\mongocrypt.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="libmongocrypt.dylib" />
-    <None Include="libmongocrypt.so" />
-    <None Include="packages.config" />
+    <None Include="Mongo\libmongocrypt.dylib" />
+    <None Include="Mongo\libmongocrypt.so" />
+    <None Include="Mongo\packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MongoDB.Libmongocrypt.1.2.2\build\MongoDB.Libmongocrypt.targets" Condition="Exists('..\packages\MongoDB.Libmongocrypt.1.2.2\build\MongoDB.Libmongocrypt.targets')" />

@@ -14,7 +14,7 @@ namespace LayersConstructor
     /// </summary>
     public partial class Constructor : Window
     {
-        public FullPropCollection Codes { get; } = new FullPropCollection();
+        public LayersFieldsCollection Codes { get; } = new LayersFieldsCollection();
 
         int SelectedField = 0;
         List<TextBox> FieldsCodes = new List<TextBox>();
