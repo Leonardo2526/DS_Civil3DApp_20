@@ -39,7 +39,7 @@ namespace SetStyleProp
                 var colls = collCursor.ToList();
                 foreach (var col in colls)
                 {
-                    if (col["name"].AsString == "01_Раздел")
+                    if (!col["name"].AsString.Contains("Шаблон"))
                         {
                         if (LayerDescription == "")
                             LayerDescription = IterateDocuments(col["name"].AsString);

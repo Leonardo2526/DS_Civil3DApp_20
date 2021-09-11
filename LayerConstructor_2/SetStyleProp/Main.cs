@@ -128,25 +128,27 @@ namespace SetStyleProp
 
                     StylesProp stylesProp = 
                         new StylesProp(obID, pf, styleType, stylebase, ChangedStylesList, Database);
-                    string LayerCode = "АД_";
 
                     if (!styleType.Name.Contains("LabelStyle"))
-                        stylesProp.SetLayerToStyle(LayerCode);
+                    {
+                        //stylesProp.SetLayerToStyle();
+                        stylesProp.SetStyleDescription();
+                    }
                     else
-                        stylesProp.SetLayerToLabelStyle(LayerCode);
+                    {
+                        //stylesProp.SetLayerToLabelStyle();
+                        stylesProp.SetStyleDescription();
 
-                    acTrans.Commit();
+                    }
+
+                    
+                        acTrans.Commit();
                 }
             }
         }
 
 
-        void SplitStyleName(string styleName, List<string> NameFields)
-        {
-
-
-            styleName.Split();
-        }
+       
 
 
 

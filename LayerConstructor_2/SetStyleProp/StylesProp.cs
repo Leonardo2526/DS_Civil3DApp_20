@@ -10,6 +10,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ObjectId = Autodesk.AutoCAD.DatabaseServices.ObjectId;
+using System.Collections.Generic;
 
 namespace SetStyleProp
 {
@@ -33,7 +34,7 @@ namespace SetStyleProp
             Database = db;
         }
 
-        public void SetLayerToStyle(string LayerCode)
+        public void SetLayerToStyle()
         {
             string layerName = "Defpoints";
 
@@ -54,7 +55,6 @@ namespace SetStyleProp
                 return;
 
             
-            Mongo mongo = new Mongo(Database, LayerCode);
 
             // run through the collection of methods
             foreach (MethodInfo method in methods)
@@ -87,22 +87,49 @@ namespace SetStyleProp
                 }
 
             }
-            stylebase.Description = mongo.GetDescription();
             AddToChangedStylesList(stylebase);
 
         }
 
-        public void SetLayerToLabelStyle(string LayerCode)
+        public void SetStyleDescription()
         {
-            Mongo mongo = new Mongo(Database, LayerCode);
 
+            List<string> SplitedLayerName = SplitString(stylebase.Name);
+
+            if (SplitedLayerName.Count > 1)
+            {
+                foreach (string field in SplitedLayerName)
+                {
+                    Mongo mongo = new Mongo(Database, field);
+
+                    string description = mongo.GetDescription();
+                    if (description != "")
+                        stylebase.Description += description + "-";
+                    else
+                        stylebase.Description += field;
+                }
+            }
+
+        }
+
+        public List<string> SplitString(string line)
+        {
+            char separator = Convert.ToChar("-");
+            string[] SplitedLineArray = line.Split(separator);
+
+            List<string> SplitedLine = new List<string>(SplitedLineArray);
+
+            return SplitedLine;
+        }
+
+        public void SetLayerToLabelStyle()
+        {
             try
             {
                 using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
                 {
                     LabelStyle labelStyle = acTrans.GetObject(ObId, OpenMode.ForWrite) as LabelStyle;
                     labelStyle.Properties.Label.Layer.Value = "Defpoints";
-                    labelStyle.Description = mongo.GetDescription();
                     acTrans.Commit();
 
                     AddToChangedLabelStylesList(labelStyle);
