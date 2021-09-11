@@ -131,12 +131,12 @@ namespace SetStyleProp
 
                     if (!styleType.Name.Contains("LabelStyle"))
                     {
-                        //stylesProp.SetLayerToStyle();
+                        stylesProp.SetLayerToStyle();
                         stylesProp.SetStyleDescription();
                     }
                     else
                     {
-                        //stylesProp.SetLayerToLabelStyle();
+                        stylesProp.SetLayerToLabelStyle();
                         stylesProp.SetStyleDescription();
 
                     }

@@ -34,12 +34,18 @@ namespace SetStyleProp
         void IterateCollections()
         //Get all collections
         {
+
             using (var collCursor = Database.ListCollections())
             {
                 var colls = collCursor.ToList();
+
                 foreach (var col in colls)
                 {
-                    if (!col["name"].AsString.Contains("Шаблон"))
+                    if (!col["name"].AsString.Contains("Шаблон") &                         
+                        col["name"].AsString != "01_Раздел" &
+                        col["name"].AsString != "03_Отображение" &
+                        col["name"].AsString != "05_Подтип" &
+                        col["name"].AsString != "09_Проекция")
                         {
                         if (LayerDescription == "")
                             LayerDescription = IterateDocuments(col["name"].AsString);

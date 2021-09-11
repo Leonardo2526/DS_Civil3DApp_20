@@ -96,18 +96,38 @@ namespace SetStyleProp
 
             List<string> SplitedLayerName = SplitString(stylebase.Name);
 
+            //Exclude names without '-' sign, like 'Standard'
             if (SplitedLayerName.Count > 1)
             {
+                //Remove template code from search of description
+                SplitedLayerName.RemoveAt(0);
+
+                //Clear old description
+                stylebase.Description = "";
+
+                int i = 0;
                 foreach (string field in SplitedLayerName)
                 {
-                    Mongo mongo = new Mongo(Database, field);
+                    i++;
 
-                    string description = mongo.GetDescription();
-                    if (description != "")
-                        stylebase.Description += description + "-";
-                    else
-                        stylebase.Description += field;
+                    //Exclude fields with 0 and DP layers
+                    if (i == 1)
+                    {
+                        if (field == "0" || field == "DP")
+                            continue;
+                    }
+                        Mongo mongo = new Mongo(Database, field);
+
+                        string description = mongo.GetDescription();
+                        if (description != "")
+                            stylebase.Description += description + "-";
+                        else
+                            stylebase.Description += field + "-";
                 }
+
+                char[] charsToTrim = { '-'};
+                stylebase.Description = stylebase.Description.Trim(charsToTrim);
+                stylebase.CreateBy = "DS";
             }
 
         }
