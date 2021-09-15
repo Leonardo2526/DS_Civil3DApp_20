@@ -23,7 +23,11 @@ namespace SetStyleProp
 
         public void StartExcel()
         {
+<<<<<<< HEAD
             FileName = CurDateTime + "_ChangedStyles.xlsx";
+=======
+            FileName = CurDateTime + "_StylesRename.xlsx";
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
             excelFilePath = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Desktop\" + FileName);
 
             excelApp = new Excel.Application();

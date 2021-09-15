@@ -22,7 +22,11 @@ namespace SetStyleProp
         {
             DS_Tools dS_Tools = new DS_Tools
             {
+<<<<<<< HEAD
                 DS_LogName = CurDateTime + "_ChangedStyles_Log.txt",
+=======
+                DS_LogName = CurDateTime + "_StylesRename_Log.txt",
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
                 DS_LogOutputPath = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Desktop\Logs\")
             };
 

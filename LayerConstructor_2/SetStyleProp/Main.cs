@@ -4,19 +4,28 @@ using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using System;
 using System.Collections;
+<<<<<<< HEAD
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ObjectId = Autodesk.AutoCAD.DatabaseServices.ObjectId;
+=======
+using System.Reflection;
+using System.Windows.Forms;
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
 
 namespace SetStyleProp
 {
     class Main
     {
+<<<<<<< HEAD
         string CurrentDBName;
         readonly IMongoDatabase Database;
+=======
+        private static Transaction ts;
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
 
         //Get current date and time    
         readonly string CurDate = DateTime.Now.ToString("yyMMdd");
@@ -28,6 +37,7 @@ namespace SetStyleProp
 
         public ArrayList ChangedStylesList = new ArrayList();
 
+<<<<<<< HEAD
         public Main(string cDBName, IMongoDatabase db)
         {
             CurrentDBName = cDBName;
@@ -47,6 +57,15 @@ namespace SetStyleProp
             {
                 CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
                 ListRoot(CivilDoc.Styles);
+=======
+
+        public void GetStyles()
+        {
+            using (docLck)
+            {
+                    CivilDocument CivilDoc = Autodesk.Civil.ApplicationServices.CivilApplication.ActiveDocument;
+                    ListRoot(CivilDoc.Styles);
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
             }
 
             //Output to Excel and txt
@@ -54,9 +73,15 @@ namespace SetStyleProp
                 MessageBox.Show("No styles has been changed!");
             else
             {
+<<<<<<< HEAD
                 Output output = new Output(ChangedStylesList);
                 output.WriteToExcel();
                 //output.WriteToLog();
+=======
+                Output output = new Output(ChangedStylesList);             
+                    output.WriteToExcel();
+                    //output.WriteToLog();
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
                 MessageBox.Show("Completed successfully! \n" + ChangedStylesList.Count + " styles have been changed.");
                 MessageBox.Show("Excel file has been saved to: \n" + ExcelExport.excelFilePath);
 
@@ -73,7 +98,10 @@ namespace SetStyleProp
         {
             // Get all the properties
             Type objectType = root.GetType();
+<<<<<<< HEAD
 
+=======
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
             PropertyInfo[] properties = objectType.GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
 
             foreach (PropertyInfo pf in properties)
@@ -91,11 +119,24 @@ namespace SetStyleProp
                         return;
                     ListRoot(root2);
                 }
+<<<<<<< HEAD
 
 
             }
 
 
+=======
+                else if (pf.PropertyType.ToString().Contains("Default"))
+                {
+                    // A default type, just use the name
+                }
+                else
+                {
+                    // We're not sure what this is
+
+                }
+            }
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
         }
 
         /// <summary>
@@ -119,6 +160,7 @@ namespace SetStyleProp
 
             foreach (ObjectId obID in scBase)
             {
+<<<<<<< HEAD
                 List<string> NameFields = new List<string>();
 
                 using (Transaction acTrans = Main.docCurDb.TransactionManager.StartTransaction())
@@ -155,3 +197,18 @@ namespace SetStyleProp
     }
 
 }
+=======
+                StylesProp stylesProp = new StylesProp(obID, pf, objectType, ChangedStylesList);
+
+                if (!objectType.Name.Contains("LabelStyle"))                
+                    stylesProp.SetLayerToStyle();
+                else
+                stylesProp.SetLayerToLabelStyle();
+            }
+        }
+
+    }
+
+}
+
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8

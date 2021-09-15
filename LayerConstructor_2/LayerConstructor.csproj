@@ -159,7 +159,10 @@
     <Compile Include="Log.cs" />
     <Compile Include="Models\LayerField.cs" />
     <Compile Include="Models\MyObject.cs" />
+<<<<<<< HEAD
     <Compile Include="Mongo\Mongo.cs" />
+=======
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
     <Compile Include="SetStyleProp\ExcelExport.cs" />
     <Compile Include="SetStyleProp\Main.cs" />
     <Compile Include="SetStyleProp\Output.cs" />

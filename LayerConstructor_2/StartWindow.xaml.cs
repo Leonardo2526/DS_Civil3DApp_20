@@ -227,7 +227,11 @@ namespace LayersConstructor
 
         private void SetStylesProp_Click(object sender, RoutedEventArgs e)
         {
+<<<<<<< HEAD
             Main main = new Main(CurrentDBName, database);
+=======
+            Main main = new Main();
+>>>>>>> e27f8ddf0d07b25b8e7194a6d6bafc49243afda8
             main.GetStyles();
         }
     }
