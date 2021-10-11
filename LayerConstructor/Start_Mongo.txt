@@ -1,0 +1,39 @@
+//Command prompt lines
+
+//Start new server from specific db
+"C:\Program Files\MongoDB\Server\5.0\bin\mongod.exe" --dbpath="C:\Program Files\MongoDB\Server\5.0\data\db"
+
+"C:\Program Files\MongoDB\Server\5.0\bin\mongod.exe" --dbpath="D:/OneDrive/DB"
+"C:\Program Files\MongoDB\Server\5.0\bin\mongod.exe" --dbpath="D:/OneDrive/DB" --repair"
+
+"C:\Program Files\MongoDB\Server\5.0\bin\mongod.exe" --dbpath="C:\Users\d.saraev.GCM\OneDrive\DB"
+"C:\Program Files\MongoDB\Server\5.0\bin\mongod.exe" --dbpath="C:\Users\d.saraev.GCM\OneDrive\DB" --repair
+
+
+
+//Default connection string
+mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false
+
+//Change directory
+cd "C:\Program Files\MongoDB\Server\5.0\bin\"
+
+
+
+//Mongo shell launch:
+"C:\Program Files\MongoDB\Server\5.0\bin\mongo.exe"
+
+
+db = connect("localhost:27017/admin")
+db = connect("172.16.153.56:27017/admin", "mdbbim", "Fr1n$3ur")
+db = connect("172.16.153.56:27017/", "mdbbim", "Fr1n$3ur")
+
+mongodb://mdbbim:Fr1n$3ur@172.16.153.56:27017/?authSource=admin
+mongodb://mdbbim:Fr1n$3ur@172.16.153.56:27017/01_KRRK_P
+mongodb://localhost:27017/admin
+mongodb://localhost:27017/01_KRRK_P
+
+
+"01_KRRK_P"
+"02_KRRK_R"
+"03_TVVM_P"
+"04_TVVM_R"
