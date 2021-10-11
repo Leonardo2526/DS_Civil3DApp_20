@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinesIntersection", "LinesI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetStyleProp", "SetStyleProp\SetStyleProp.csproj", "{6A4F914E-EF71-4FF0-B887-959486FBE9FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DS.Civil3D.WPF.FW4.81", "DS.Civil3D.WPF.FW4.81\DS.Civil3D.WPF.FW4.81.csproj", "{77720723-0884-43D4-A02E-F90976EE135C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A4F914E-EF71-4FF0-B887-959486FBE9FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77720723-0884-43D4-A02E-F90976EE135C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77720723-0884-43D4-A02E-F90976EE135C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77720723-0884-43D4-A02E-F90976EE135C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77720723-0884-43D4-A02E-F90976EE135C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
